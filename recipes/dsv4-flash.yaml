@@ -1,3 +1,6 @@
+# Heavily influenced by https://huggingface.co/drowzeys/DeepSeek-V4-Flash-DSpark-NVFP4-KV-1.5M-CTX-2xDGX-Spark
+# Achieves ~40-50 tps; ~[30, 65] tps bounds
+
 model: fraserprice/DeepSeek-V4-Flash-Abliterated-DSpark
 container: vllm-dspark-runtime:dspark-nvfp4
 defaults:
@@ -73,7 +76,6 @@ env:
   VLLM_DSV4_DSPARK_DEFER_TARGET_CAPTURE_EXACT: "0"
   DG_JIT_USE_NVRTC: "0"
   TILELANG_CLEANUP_TEMP_FILES: "1"
-  VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS: 0
   TORCH_CUDA_ARCH_LIST: '12.1a'
   FLASHINFER_CUDA_ARCH_LIST: '12.1a'
 runtime: vllm
