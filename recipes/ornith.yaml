@@ -1,0 +1,38 @@
+name: Ornith-1.0-35B
+solo_only: false
+cluster_only: false
+command: |
+  vllm serve {model} \
+    --served-model-name Ornith-1.0-35B \
+    --tensor-parallel-size {tensor_parallel} \
+    --host {host} --port {port} \
+    --max-model-len {max_model_len} \
+    --gpu-memory-utilization {gpu_memory_utilization} \
+    --max-num-seqs {max_num_seqs} \
+    --max-num-batched-tokens {max_num_batched_tokens} \
+    --enable-prefix-caching \
+    --enable-auto-tool-choice --tool-call-parser qwen3_xml \
+    --reasoning-parser qwen3 \
+    --trust-remote-code \
+    --load-format {load_format} \
+    --attention-backend {attn_backend} \
+    --enable-chunked-prefill \
+    --enable-flashinfer-autotune \
+    --kv-cache-dtype {kv_cache_dtype} \
+    --speculative-config '{speculative_config}'
+defaults:
+  kv_cache_dtype: fp8
+  attn_backend: FLASHINFER
+  load_format: instanttensor
+  tensor_parallel: 1
+  max_model_len: 262144
+  max_num_seqs: 10
+  port: 8000
+  max_num_batched_tokens: 32768
+  host: 0.0.0.0
+  gpu_memory_utilization: 0.85
+  speculative_config: '{"method": "mtp", "num_speculative_tokens": 4}'
+description: Ornith-1.0-35B
+container: vllm-node-tf5
+model: kyr0/Ornith-35B-FP8-E4M3-MTP
+recipe_version: '1'

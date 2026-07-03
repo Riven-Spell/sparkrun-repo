@@ -1,0 +1,86 @@
+model: fraserprice/DeepSeek-V4-Flash-Abliterated-DSpark
+container: vllm-dspark-runtime:dspark-nvfp4
+defaults:
+  port: 8000
+  host: 0.0.0.0
+  tensor_parallel: 2
+  gpu_memory_utilization: 0.85
+  max_model_len: 400000
+  max_num_batched_tokens: 16384
+  max_num_seqs: 10
+  block_size: 256
+  tool_call_parser: deepseek_v4
+  pipeline_parallel: 1
+  data_parallel: 1
+  max_cudagraph_capture_size: 8
+  load_format: instanttensor
+  kv_cache_dtype: fp8
+  reasoning_parser: deepseek_v4
+  tokenizer_mode: deepseek_v4
+  speculative_config: '{"method": "dspark", "num_speculative_tokens": 5}'
+  compilation_config: '{"cudagraph_mode":"FULL_AND_PIECEWISE","custom_ops":["all"]}'
+  default_chat_template_kwargs: '{"enable_thinking": true, "preserve_thinking": true}'
+command: |
+  vllm serve {model} \
+    --served-model-name 'deepseek-ai/DeepSeek-V4-Flash' \
+    --host {host} \
+    --port {port} \
+    --max-model-len {max_model_len} \
+    --max-num-seqs {max_num_seqs} \
+    --max-num-batched-tokens {max_num_batched_tokens} \
+    --trust-remote-code \
+    --gpu-memory-utilization {gpu_memory_utilization} \
+    --enable-auto-tool-choice \
+    --tool-call-parser {tool_call_parser} \
+    --tokenizer-mode {tokenizer_mode} \
+    --reasoning-parser {reasoning_parser} \
+    --kv-cache-dtype {kv_cache_dtype} \
+    --load-format {load_format} \
+    --speculative-config '{speculative_config}' \
+    --compilation-config '{compilation_config}' \
+    --enable-prefix-caching \
+    --max-cudagraph-capture-size {max_cudagraph_capture_size} \
+    -tp {tensor_parallel} \
+    -pp {pipeline_parallel} \
+    --default-chat-template-kwargs '{default_chat_template_kwargs}' \
+    --block-size {block_size} \
+    --generation-config vllm \
+    --enable-flashinfer-autotune \
+    -ep
+env:
+  PYTORCH_CUDA_ALLOC_CONF: 'expandable_segments:True'
+  VLLM_ALLOW_LONG_MAX_MODEL_LEN: "1"
+  VLLM_TRITON_MLA_SPARSE: "1"
+  VLLM_SPARSE_INDEXER_MAX_LOGITS_MB: "256"
+  VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS: "0"
+  VLLM_SKIP_INIT_MEMORY_CHECK: "1"
+  VLLM_USE_B12X_MOE: "1"
+  VLLM_USE_B12X_WO_PROJECTION: "1"
+  VLLM_B12X_W4A16_FORCE_BLOCKS_PER_SM: "0"
+  VLLM_B12X_W4A16_FORCE_BLOCKS_MAX_M: "16"
+  VLLM_B12X_W4A16_FORCE_TILE_CONFIG: ""
+  B12X_W4A16_TC_DECODE: "0"
+  VLLM_DSPARK_CONFIDENCE_THRESHOLD: "0.0"
+  VLLM_DSPARK_CONFIDENCE_SCHEDULER: "off"
+  VLLM_DSPARK_LOCAL_ARGMAX: "1"
+  VLLM_DSPARK_REPLICATE_MARKOV_W1: "1"
+  VLLM_DSPARK_FUSED_MARKOV_ARGMAX: "0"
+  VLLM_DSPARK_GPU_REJECTED_CONTEXT_MASK: "1"
+  VLLM_DSPARK_REFERENCE_KV_QUANT_DEQUANT: "0"
+  VLLM_DSPARK_HARDWARE_SCHEDULER_EARLY_STOP: "1"
+  VLLM_DSV4_B12X_COMPRESSED_MLA: "0"
+  VLLM_DSV4_DSPARK_DEFER_TARGET_CAPTURE: "0"
+  VLLM_DSV4_DSPARK_DEFER_TARGET_CAPTURE_EXACT: "0"
+  DG_JIT_USE_NVRTC: "0"
+  TILELANG_CLEANUP_TEMP_FILES: "1"
+  VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS: 0
+  TORCH_CUDA_ARCH_LIST: '12.1a'
+  FLASHINFER_CUDA_ARCH_LIST: '12.1a'
+runtime: vllm
+runtime_config:
+  build_args: [ '--vllm-ref', '8a91228dbe363d1d113deb2a82e289429130dd01', '--apply-vllm-pr', '41834' ]
+builder: eugr
+min_nodes: 2
+metadata:
+  description: DeepSeek-V4-Flash
+recipe_version: '2'

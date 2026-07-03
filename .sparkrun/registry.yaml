@@ -1,0 +1,5 @@
+registries:
+  - name: riven-spell
+    description: Riven-Spell's hand-janked recipes
+    recipes: recipes
+    mods: mods
