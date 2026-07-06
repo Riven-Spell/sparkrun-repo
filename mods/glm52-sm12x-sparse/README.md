@@ -1,0 +1,2 @@
+Copied verbatim from [tonyd2wild/GLM-5.2-QuantTrio-200K-4x-DGX-Spark](https://github.com/tonyd2wild/GLM-5.2-QuantTrio-200K-4x-DGX-Spark)
+Kernels copied verbatim from [CosmicRaisins](https://github.com/CosmicRaisins/glm-5.2-gb10)

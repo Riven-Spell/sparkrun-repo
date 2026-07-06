@@ -1,0 +1,17 @@
+# Replicates https://github.com/tonyd2wild/GLM-5.2-QuantTrio-200K-4x-DGX-Spark under sparkrun
+
+model: QuantTrio/GLM-5.2-Int4-Int8Mix
+
+# Very first thing, this requires a custom build of VLLM. We'll use a fresh container for this.
+container: vllm-node-tf5-glm52-b12x:probe
+runtime: vllm
+builder: eugr
+runtime_config:
+  build_args: [ '--vllm-ref', 'ab666069935c1f23e8ef56038b4659ac9e8f19f8', '--tf5']
+
+# Then, we must bake the kernels into the image
+mods:
+  - mods/glm52-b12x-sparse
+  - mods/glm52-sm12x-sparse
+  - mods/glm52-mtp-overhang-fix
+
