@@ -1,6 +1,10 @@
 # Replicates https://github.com/tonyd2wild/GLM-5.2-QuantTrio-200K-4x-DGX-Spark under sparkrun
 
 model: QuantTrio/GLM-5.2-Int4-Int8Mix
+min_nodes: 4
+metadata:
+  description: GLM 5.2 QuantTrio
+recipe_version: '2'
 
 # Very first thing, this requires a custom build of VLLM. We'll use a fresh container for this.
 container: vllm-node-tf5-glm52-b12x:probe
@@ -14,4 +18,66 @@ mods:
   - mods/glm52-b12x-sparse
   - mods/glm52-sm12x-sparse
   - mods/glm52-mtp-overhang-fix
+  - mods/glm52-nccl-update
 
+defaults:
+  port: 8000
+  host: 0.0.0.0
+  tensor_parallel: 4
+  pipeline_parallel: 1
+  max_model_len: 200000
+  max_num_seqs: 6
+  max_num_batched_tokens: 8192
+  gpu_memory_usage: 0.91
+  kv_cache_memory_bytes: 10950000000
+  kv_cache_dtype: fp8_ds_mla
+  speculative_config: '{"method":"mtp","num_speculative_tokens":4,"draft_tensor_parallel_size":1,"attention_backend":"FLASHMLA_SPARSE"}'
+  compilation_config: '{"cudagraph_mode":"FULL"}'
+
+env:
+  VLLM_EXECUTE_MODEL_TIMEOUT_SECONDS: 1800
+  LD_PRELOAD: /cache/nccl-2.30.4/libnccl.so.2
+  HF_HUB_OFFLINE: 1
+  VLLM_ALLOW_LONG_MAX_MODEL_LEN: 1
+  VLLM_SPARSE_INDEXER_MAX_LOGITS_MB: 256
+  GLM52_BIND_HOST_TRITON: 1
+  GLM52_MQA_LOGITS_TRITON: 1
+  GLM52_PAGED_MQA_TRITON: 1
+  GLM52_PAGED_MQA_TOPK_CHUNK_SIZE: 8192
+  GLM52_B12X_MLA: 1
+  TORCH_CUDA_ARCH_LIST: 12.1a
+  NCCL_NET: IB
+  NCCL_IB_DISABLE: 0
+  NCCL_IB_HCA: rocep1s0f0          # EDIT: your RoCE HCA (`ibdev2netdev`)
+  NCCL_SOCKET_IFNAME: enp1s0f0np0  # EDIT: your fabric interface (`ip link`)
+  GLOO_SOCKET_IFNAME: enp1s0f0np0  # EDIT: same fabric interface
+  NCCL_IB_GID_INDEX: 3"             # EDIT if your RoCEv2 GID differs (`show_gids`)
+  NCCL_MAX_NCHANNELS: 4
+  NCCL_MIN_NCHANNELS: 4
+  NCCL_CROSS_NIC: 1
+  NCCL_CUMEM_ENABLE: 0
+  NCCL_IGNORE_CPU_AFFINITY: 1
+  NCCL_DEBUG: WARN
+
+command: |
+  vllm serve {model} \
+  --served-model-name zai-org/GLM-5.2 \
+  --host {host} \
+  --port {port} \
+  --trust-remote-code \ 
+  --reasoning-parser glm45 \ 
+  --tool-call-parser glm47 \
+  --enable-auto-tool-choice \
+  --enable-prefix-caching \
+  --async-scheduling \
+  --speculative-config '{speculative_config}' \
+  --tensor-parallel-size {tensor_parallel} \
+  --pipeline-parallel-size {pipeline_parallel} \
+  --max-model-len {max_model_len} \
+  --max-num-seqs {max_num_seqs} \
+  --max-num-batched-tokens {max_num_batched_tokens} \
+  --gpu-memory-utilization {gpu_memory_utilization} \ 
+  --kv-cache-memory-bytes {kv_cache_memory_bytes} \
+  --kv-cache-dtype {kv_cache_dtype} \
+  --distributed-executor-backend mp \
+  --compilation-config '{compilation_config}'

@@ -1,0 +1,13 @@
+diff --git a/vllm/v1/attention/backends/mla/indexer.py b/vllm/v1/attention/backends/mla/indexer.py
+index b38445f9f..a19f5a89d 100644
+--- a/vllm/v1/attention/backends/mla/indexer.py
++++ b/vllm/v1/attention/backends/mla/indexer.py
+@@ -337,7 +337,7 @@ class DeepseekV32IndexerMetadataBuilder(AttentionMetadataBuilder):
+         max_num_blocks_per_req = cdiv(
+             self.vllm_config.model_config.max_model_len,
+             self.kv_cache_spec.block_size * get_total_cp_world_size(),
+-        )
++        ) + 1 # MTP spec tokens can extend a request one block past max_model_len
+         self.expanded_block_table_buffer = torch.zeros(
+             (
+                 scheduler_config.max_num_batched_tokens,
