@@ -58,7 +58,7 @@ defaults:
   max_num_seqs: 10
   attn_backend: TRITON_ATTN
   chat_template_args: '{"enable_thinking": true}'
-  speculative_config: '{"method": "mtp", "num_speculative_tokens": 5}'
+  speculative_config: '{"method": "mtp", "num_speculative_tokens": 5, "model": "google/gemma-4-26B-A4B-it-assistant"}'
 env:
   VLLM_MARLIN_USE_ATOMIC_ADD: '1'
   #VLLM_USE_FASTOKENS: '1'
