@@ -65,8 +65,8 @@ env:
   #VLLM_USE_FASTOKENS: "1"
   VLLM_FLASHINFER_DECODE_USE_TENSOR_CORES: '1'
 mods:
+  - mods/vllm-pr-40898-forward
   - mods/fix-gemma4-tool-parser
   - mods/gemma4-jinja
   - mods/fix-gemma4-mtp
-  - mods/vllm-pr-40898-forward
   #- fastokens
