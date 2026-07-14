@@ -43,7 +43,7 @@ container: eugr-gemma4-025-main
 recipe_version: '2'
 builder: eugr
 runtime_config:
-  build_args: [ '--vllm-ref', 'v0.25.0' ]
+  build_args: [ '--vllm-ref', 'v0.25.0', '--flashinfer-ref', 'v0.6.14' ]
 defaults:
   host: 0.0.0.0
   tool_call_parser: gemma4
