@@ -31,7 +31,6 @@ command: |
     --default-chat-template-kwargs '{chat_template_args}' \
     --chat-template chat_template.jinja \
     --trust-remote-code \
-    --speculative-config '{speculative_config}' \
     --async-scheduling \
     --enable-chunked-prefill \
     --block-size 512 \
@@ -58,7 +57,6 @@ defaults:
   max_num_seqs: 10
   attn_backend: TRITON_ATTN
   chat_template_args: '{"enable_thinking": true}'
-  speculative_config: '{"method": "dflash", "model":"z-lab/gemma-4-26B-A4B-it-DFlash", "num_speculative_tokens": 8}'
 env:
   VLLM_MARLIN_USE_ATOMIC_ADD: '1'
   #VLLM_USE_FASTOKENS: '1'
