@@ -1,9 +1,9 @@
 registries:
-  - name: riven-spell/1x
+  - name: riven-spell-1x
     description: Riven-Spell's hand-janked recipes
     recipes: recipes/1x
     mods: mods
-  - name: riven-spell/2x
+  - name: riven-spell-2x
     description: Riven-Spell's hand-janked recipes
     recipes: recipes/2x
     mods: mods
