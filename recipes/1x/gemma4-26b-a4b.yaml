@@ -34,6 +34,7 @@ command: |
     --async-scheduling \
     --enable-chunked-prefill \
     --block-size 512 \
+    --speculative-config '{speculative_config}' \
     -ep \
     -O3
 runtime: vllm
@@ -57,6 +58,7 @@ defaults:
   max_num_seqs: 10
   attn_backend: TRITON_ATTN
   chat_template_args: '{"enable_thinking": true}'
+  speculative_config: '{"method": "mtp", "num_speculative_tokens": 5}'
 env:
   VLLM_MARLIN_USE_ATOMIC_ADD: '1'
   #VLLM_USE_FASTOKENS: '1'
