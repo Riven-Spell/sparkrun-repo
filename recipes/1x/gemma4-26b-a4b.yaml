@@ -35,7 +35,6 @@ command: |
     --enable-chunked-prefill \
     --block-size 512 \
     --speculative-config '{speculative_config}' \
-    -ep \
     -O3
 runtime: vllm
 container: eugr-gemma4-025-main
