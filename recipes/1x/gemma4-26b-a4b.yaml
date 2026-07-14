@@ -56,13 +56,14 @@ defaults:
   max_num_batched_tokens: 32768
   max_model_len: 262144
   max_num_seqs: 10
-  attn_backend: TRITON_ATTN
+  attn_backend: FLASHINFER
   chat_template_args: '{"enable_thinking": true}'
   speculative_config: '{"method": "dflash", "model":"z-lab/gemma-4-26B-A4B-it-DFlash", "num_speculative_tokens": 8}'
 env:
   VLLM_MARLIN_USE_ATOMIC_ADD: '1'
-  #VLLM_USE_FASTOKENS: "1"
+  #VLLM_USE_FASTOKENS: '1'
   VLLM_FLASHINFER_DECODE_USE_TENSOR_CORES: '1'
+  VLLM_USE_V2_MODEL_RUNNER: '1'
 mods:
   - mods/vllm-pr-40898-forward
   - mods/fix-gemma4-tool-parser
