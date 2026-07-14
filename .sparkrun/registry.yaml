@@ -1,21 +1,21 @@
 registries:
-  - name: riven-spell/1x
+  - name: riven-spell-1x
     description: Riven-Spell's hand-janked recipes
     recipes: recipes/1x
     mods: mods
-  - name: riven-spell/2x
+  - name: riven-spell-2x
     description: Riven-Spell's hand-janked recipes
     recipes: recipes/2x
     mods: mods
-  - name: riven-spell/3x
+  - name: riven-spell-3x
     description: Riven-Spell's hand-janked recipes
     recipes: recipes/3x
     mods: mods
-  - name: riven-spell/4x
+  - name: riven-spell-4x
     description: Riven-Spell's hand-janked recipes
     recipes: recipes/4x
     mods: mods
-  - name: riven-spell/experimental
+  - name: riven-spell-experimental
     description: Riven-Spell's hand-janked recipes
     recipes: recipes/exp
     mods: mods
