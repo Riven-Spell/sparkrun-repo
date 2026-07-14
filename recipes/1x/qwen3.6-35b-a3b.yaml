@@ -3,7 +3,7 @@ solo_only: false
 cluster_only: false
 command: |
   vllm serve {model} \
-    --served-model-name Ornith-1.0-35B \
+    --served-model-name Qwen/Qwen3.6-35B-A3B \
     --tensor-parallel-size {tensor_parallel} \
     --host {host} --port {port} \
     --max-model-len {max_model_len} \
@@ -19,9 +19,10 @@ command: |
     --enable-chunked-prefill \
     --enable-flashinfer-autotune \
     --kv-cache-dtype {kv_cache_dtype} \
-    --speculative-config '{speculative_config}'
+    --speculative-config '{"method": "mtp", "num_speculative_tokens": 2}' \
+    -ep
 defaults:
-  kv_cache_dtype: fp8
+  kv_cache_dtype: auto
   attn_backend: FLASHINFER
   load_format: instanttensor
   tensor_parallel: 1
@@ -31,8 +32,16 @@ defaults:
   max_num_batched_tokens: 32768
   host: 0.0.0.0
   gpu_memory_utilization: 0.85
-  speculative_config: '{"method": "mtp", "num_speculative_tokens": 4}'
+env:
+  INSTANTTENSOR_CHUNK_SIZE: "16777216"
+  INSTANTTENSOR_IO_DEPTH: 5
+  PYTORCH_CUDA_ALLOC_CONF: 'expandable_segments:True,max_non_split_rounding_mb:2048,graph_capture_record_stream_reuse:True,pinned_use_background_threads:True,pinned_use_cuda_host_register:True'
+  VLLM_MARLIN_USE_ATOMIC_ADD: "1"
+  VLLM_USE_FASTOKENS: "1"
+mods:
+  - fastokens
 description: Ornith-1.0-35B
 container: vllm-node-tf5
-model: kyr0/Ornith-35B-FP8-E4M3-MTP
-recipe_version: '1'
+model: unsloth/Qwen3.6-35B-A3B-NVFP4-Fast
+recipe_version: '2'
+builder: eugr

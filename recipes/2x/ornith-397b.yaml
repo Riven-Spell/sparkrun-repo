@@ -1,0 +1,61 @@
+name: Ornith-1.0-397B
+container: vllm-dspark-runtime:ornith
+builder: eugr
+solo_only: false
+cluster_only: false
+command: |
+  vllm serve {model} \
+    --served-model-name Ornith-1.0-397B \
+    --tensor-parallel-size {tensor_parallel} \
+    --host {host} --port {port} \
+    --max-model-len {max_model_len} \
+    --max-num-seqs {max_num_seqs} \
+    --max-num-batched-tokens {max_num_batched_tokens} \
+    --enable-prefix-caching \
+    --enable-auto-tool-choice --tool-call-parser qwen3_xml \
+    --reasoning-parser qwen3 \
+    --trust-remote-code \
+    --load-format {load_format} \
+    --attention-backend {attn_backend} \
+    --enable-chunked-prefill \
+    --enable-flashinfer-autotune \
+    --kv-cache-dtype {kv_cache_dtype} \
+    --block-size {block_size} \
+    --max-cudagraph-capture-size {max_cudagraph_capture_size} \
+    -ep \
+    --gpu-memory-utilization {gpu_memory_utilization} \
+    --kv-cache-memory-bytes "5g" \
+    -O3 \
+    --attention-config.use_trtllm_attention=1
+defaults:
+  kv_cache_dtype: fp8
+  attn_backend: FLASHINFER
+  load_format: instanttensor
+  tensor_parallel: 2
+  max_model_len: 262144
+  max_num_seqs: 6
+  max_cudagraph_capture_size: 8
+  port: 8000
+  max_num_batched_tokens: 8192
+  block_size: 256
+  host: 0.0.0.0
+  gpu_memory_utilization: 0.9
+  speculative_config: '{"method": "dflash", "num_speculative_tokens": 12, "model": "z-lab/Qwen3.5-397B-A17B-DFlash"}'
+env:
+  INSTANTTENSOR_CHUNK_SIZE: "16777216"
+  INSTANTTENSOR_IO_DEPTH: 5
+  PYTORCH_CUDA_ALLOC_CONF: 'expandable_segments:True,max_non_split_rounding_mb:2048,graph_capture_record_stream_reuse:True,pinned_use_background_threads:True,pinned_use_cuda_host_register:True'
+  VLLM_MARLIN_USE_ATOMIC_ADD: "1"
+  DG_JIT_USE_NVRTC: "0"
+  TILELANG_CLEANUP_TEMP_FILES: "1"
+  VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS: "0"
+  VLLM_SKIP_INIT_MEMORY_CHECK: "1"
+  VLLM_USE_FASTOKENS: "1"
+  VLLM_FLASHINFER_DECODE_USE_TENSOR_CORES: “1”
+
+mods:
+  - zenprocess-dflash-fix
+  - fastokens
+description: Ornith-1.0-397B
+model: fraserprice/Ornith-1.0-397B-W4A16-AutoRound-DFlash
+recipe_version: '2'

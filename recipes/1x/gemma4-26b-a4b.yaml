@@ -1,0 +1,72 @@
+metadata:
+  num_layers: 30
+  quantization: modelopt
+  description: Gemma4-31B-it
+  model_dtype: nvfp4
+  quant_bits: 4
+  kv_dtype: auto
+  num_kv_heads: 8
+  head_dim: 256
+  model_params: '34372770104'
+model: google/gemma-4-26B-A4B-it
+command: |
+  vllm serve {model} \
+    --served-model-name "google/gemma-4-26B-A4B-it" \
+    --max-model-len {max_model_len} \
+    --kv-cache-dtype {kv_cache_dtype} \
+    --gpu-memory-utilization {gpu_memory_utilization} \
+    --host {host} \
+    --port {port} \
+    --load-format {load_format} \
+    --enable-prefix-caching \
+    --tool-call-parser {tool_call_parser} \
+    --enable-auto-tool-choice \
+    --reasoning-parser {reasoning_parser} \
+    --async-scheduling \
+    --max-num-batched-tokens {max_num_batched_tokens} \
+    --max-num-seqs {max_num_seqs} \
+    -tp {tensor_parallel} \
+    -pp {pipeline_parallel} \
+    --attention-backend {attn_backend} \
+    --enable-flashinfer-autotune \
+    --default-chat-template-kwargs '{chat_template_args}' \
+    --chat-template chat_template.jinja \
+    --trust-remote-code \
+    --speculative-config '{speculative_config}' \
+    --async-scheduling \
+    --enable-chunked-prefill \
+    --block-size 512 \
+    -ep \
+    -O3
+runtime: vllm
+container: eugr-gemma4-025-main
+recipe_version: '2'
+builder: eugr
+runtime_config:
+  build_args: [ '--vllm-ref', 'v0.25.0' ]
+defaults:
+  host: 0.0.0.0
+  tool_call_parser: gemma4
+  port: 8000
+  pipeline_parallel: 1
+  load_format: instanttensor
+  reasoning_parser: gemma4
+  kv_cache_dtype: auto
+  gpu_memory_utilization: 0.8
+  tensor_parallel: 1
+  max_num_batched_tokens: 32768
+  max_model_len: 262144
+  max_num_seqs: 10
+  attn_backend: auto
+  chat_template_args: '{"enable_thinking": true}'
+  speculative_config: '{"method": "dflash", "model":"z-lab/gemma-4-26B-A4B-it-DFlash", "num_speculative_tokens": 8}'
+env:
+  VLLM_MARLIN_USE_ATOMIC_ADD: '1'
+  VLLM_USE_FASTOKENS: "1"
+  VLLM_FLASHINFER_DECODE_USE_TENSOR_CORES: '1'
+mods:
+  - mods/fix-gemma4-tool-parser
+  - mods/gemma4-jinja
+  - mods/fix-gemma4-mtp
+  - mods/vllm-pr-40898-forward
+  - fastokens

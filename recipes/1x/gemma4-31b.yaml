@@ -1,17 +1,17 @@
 metadata:
   num_layers: 30
   quantization: modelopt
-  description: Gemma4-31B-it-NVFP4-turbo
+  description: Gemma4-31B-it
   model_dtype: nvfp4
   quant_bits: 4
   kv_dtype: fp8
   num_kv_heads: 8
   head_dim: 256
   model_params: '34372770104'
-model: LilaRest/gemma-4-31B-it-NVFP4-turbo
+model: ebircak/gemma-4-31B-it-4bit-NVFP4A16-GPTQ
 command: |
   vllm serve {model} \
-    --quantization modelopt \
+    --served-model-name "google/gemma-4-31B" \
     --max-model-len {max_model_len} \
     --kv-cache-dtype {kv_cache_dtype} \
     --gpu-memory-utilization {gpu_memory_utilization} \
@@ -27,15 +27,21 @@ command: |
     --max-num-seqs {max_num_seqs} \
     -tp {tensor_parallel} \
     -pp {pipeline_parallel} \
-    --default-chat-template-kwargs '{"enable_thinking": true}' \
+    --attention-backend {attn_backend} \
+    --enable-flashinfer-autotune \
+    --default-chat-template-kwargs '{chat_template_args}' \
     --chat-template chat_template.jinja \
     --trust-remote-code \
-    --speculative-config '{"method": "dflash", "model":"RedHatAI/gemma-4-31B-it-speculator.dflash", "num_speculative_tokens": 12}'
+    --speculative-config '{speculative_config}' \
+    --async-scheduling \
+    --enable-chunked-prefill \
+    --block-size 512 \
+    -O3
 runtime: vllm
 container: sparkrun-eugr-vllm-tf5
 recipe_version: '2'
 runtime_config:
-  build_args: [--apply-vllm-pr 45544]
+  build_args: [ '--apply-vllm-pr', '45544']
 defaults:
   host: 0.0.0.0
   tool_call_parser: gemma4
@@ -43,16 +49,18 @@ defaults:
   pipeline_parallel: 1
   load_format: instanttensor
   reasoning_parser: gemma4
-  kv_cache_dtype: fp8
+  kv_cache_dtype: auto
   gpu_memory_utilization: 0.8
   tensor_parallel: 1
-  max_num_batched_tokens: 8192
+  max_num_batched_tokens: 32768
   max_model_len: 262144
   max_num_seqs: 10
+  attn_backend: TRITON_ATTN
+  chat_template_args: '{"enable_thinking": true}'
+  speculative_config: '{"method": "dflash", "model":"RedHatAI/gemma-4-31B-it-speculator.dflash", "num_speculative_tokens": 5}'
 env:
   VLLM_MARLIN_USE_ATOMIC_ADD: '1'
 mods:
   - mods/fix-gemma4-tool-parser
   - mods/gemma4-jinja
-  - mods/fix-gemma4-modelopt
   - mods/fix-gemma4-mtp
