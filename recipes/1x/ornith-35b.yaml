@@ -3,7 +3,7 @@ solo_only: false
 cluster_only: false
 command: |
   vllm serve {model} \
-    --served-model-name Ornith-1.0-35B \
+    --served-model-name deepreinforce-ai/Ornith-1.0-35B \
     --tensor-parallel-size {tensor_parallel} \
     --host {host} --port {port} \
     --max-model-len {max_model_len} \
