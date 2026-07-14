@@ -8,7 +8,7 @@ metadata:
   num_kv_heads: 8
   head_dim: 256
   model_params: '34372770104'
-model: google/gemma-4-26B-A4B-it
+model: unsloth/gemma-4-26B-A4B-it-NVFP4
 command: |
   vllm serve {model} \
     --served-model-name "google/gemma-4-26B-A4B-it" \
