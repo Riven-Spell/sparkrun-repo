@@ -78,6 +78,7 @@ env:
   TILELANG_CLEANUP_TEMP_FILES: "1"
   TORCH_CUDA_ARCH_LIST: '12.1a'
   FLASHINFER_CUDA_ARCH_LIST: '12.1a'
+  NCCL_DEBUG: 'INFO'
 runtime: vllm
 runtime_config:
   build_args: [ '--vllm-ref', '3d99b0499aff7ce3b91942b0385558dab4eecf76', '--apply-vllm-pr', '41834' ]
