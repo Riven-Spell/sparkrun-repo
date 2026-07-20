@@ -32,7 +32,7 @@ defaults:
   max_num_batched_tokens: 32768
   host: 0.0.0.0
   gpu_memory_utilization: 0.85
-  speculative_config: '{"method": "dspark", "model": "pablogrant/ORNITH-1.0_35B_AEON_PABLOG-OPTIMIZED_UNCENSORED_DSPARK-DRAFT_BF16", "num_speculative_tokens": 12}'
+  speculative_config: '{"method": "dspark", "model": "pablogrant/ORNITH-1.0_35B_AEON_PABLOG-OPTIMIZED_UNCENSORED_DSPARK-DRAFT_NVFP4", "num_speculative_tokens": 2}'
 
 env:
   INSTANTTENSOR_CHUNK_SIZE: "16777216"
@@ -44,6 +44,6 @@ mods:
   - fastokens
 description: Ornith-1.0-35B
 container: vllm-node-tf5
-model: pablogrant/ORNITH-1.0_35B_AEON_PABLOG-OPTIMIZED_UNCENSORED_BF16
+model: pablogrant/ORNITH-1.0_35B_AEON_PABLOG-OPTIMIZED_UNCENSORED_NVFP4
 recipe_version: '2'
 builder: eugr
