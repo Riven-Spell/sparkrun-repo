@@ -32,7 +32,7 @@ defaults:
   max_num_batched_tokens: 32768
   host: 0.0.0.0
   gpu_memory_utilization: 0.85
-  speculative_config: '{"method": "dspark", "model": "pablogrant/ORNITH-1.0_35B_AEON_PABLOG-OPTIMIZED_UNCENSORED_DSPARK-DRAFT_NVFP4", "num_speculative_tokens": 2}'
+  speculative_config: '{"method": "dflash", "model": "AEON-7/AEON-DFlash-Qwen3.6-35B-A3B", "num_speculative_tokens": 8}'
 
 env:
   INSTANTTENSOR_CHUNK_SIZE: "16777216"
