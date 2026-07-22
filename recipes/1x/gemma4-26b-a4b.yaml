@@ -35,7 +35,6 @@ command: |
     --block-size {block_size} \
     --max-cudagraph-capture-size {max_cudagraph_capture_size} \
     --enable-flashinfer-autotune \
-    --kernel-config.moe-backend flashinfer_cutlass \
     --speculative-config '{speculative_config}' \
     --compilation-config '{compilation_config}' \
     -ep \
