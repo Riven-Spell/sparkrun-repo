@@ -1,0 +1,77 @@
+# Laguna S 2.1-FP8
+# 118B total, ~8.5B activated, MoE with 256 experts (top-10) + 1 shared expert
+# 48 layers (12 global attention, 36 sliding-window attention, window 512)
+# FP8 quantized via compressed-tensors
+# DFlash draft: poolside/Laguna-S-2.1-DFlash-FP8
+
+model: poolside/Laguna-S-2.1-FP8
+container: vllm-dspark-runtime:laguna
+builder: eugr
+min_nodes: 2
+recipe_version: '2'
+
+runtime_config:
+  build_args: [ '--vllm-ref', 'v0.25.1' ]
+
+mods:
+  - zenprocess-dflash-fix
+  - fastokens
+
+defaults:
+  port: 8000
+  host: 0.0.0.0
+  tensor_parallel: 2
+  gpu_memory_utilization: 0.90
+  max_model_len: 262144
+  max_num_batched_tokens: 16384
+  max_num_seqs: 10
+  block_size: 256
+  max_cudagraph_capture_size: 8
+  kv_cache_dtype: fp8
+  load_format: instanttensor
+  tool_call_parser: poolside_v1
+  reasoning_parser: poolside_v1
+  tokenizer_mode: auto
+  speculative_config: '{"method": "dflash", "num_speculative_tokens": 8, "model": "poolside/Laguna-S-2.1-DFlash-FP8"}'
+  default_chat_template_kwargs: '{"enable_thinking": true, "preserve_thinking": true}'
+
+command: |
+  vllm serve {model} \
+    --served-model-name 'poolside/Laguna-S-2.1-FP8' \
+    --host {host} \
+    --port {port} \
+    -tp {tensor_parallel} \
+    --max-model-len {max_model_len} \
+    --max-num-batched-tokens {max_num_batched_tokens} \
+    --max-num-seqs {max_num_seqs} \
+    --kv-cache-dtype {kv_cache_dtype} \
+    --trust-remote-code \
+    --gpu-memory-utilization {gpu_memory_utilization} \
+    --enable-auto-tool-choice \
+    --tool-call-parser {tool_call_parser} \
+    --reasoning-parser {reasoning_parser} \
+    --load-format {load_format} \
+    --max-cudagraph-capture-size {max_cudagraph_capture_size} \
+    --speculative-config '{speculative_config}' \
+    --enable-prefix-caching \
+    --default-chat-template-kwargs '{default_chat_template_kwargs}' \
+    --block-size {block_size} \
+    --generation-config vllm \
+    --enable-flashinfer-autotune \
+    -ep
+
+env:
+  VLLM_BLOCKSCALE_FP8_GEMM_FLASHINFER: "0"
+  PYTORCH_CUDA_ALLOC_CONF: 'expandable_segments:True,max_non_split_rounding_mb:2048,graph_capture_record_stream_reuse:True,pinned_use_background_threads:True,pinned_use_cuda_host_register:True'
+  VLLM_MARLIN_USE_ATOMIC_ADD: "1"
+  DG_JIT_USE_NVRTC: "0"
+  TILELANG_CLEANUP_TEMP_FILES: "1"
+  VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS: "0"
+  VLLM_SKIP_INIT_MEMORY_CHECK: "1"
+  VLLM_USE_FASTOKENS: "1"
+  VLLM_FLASHINFER_DECODE_USE_TENSOR_CORES: "1"
+  INSTANTTENSOR_CHUNK_SIZE: "16777216"
+  INSTANTTENSOR_IO_DEPTH: 5
+
+metadata:
+  description: Laguna S 2.1-FP8
