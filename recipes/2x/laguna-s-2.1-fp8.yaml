@@ -22,17 +22,18 @@ defaults:
   host: 0.0.0.0
   tensor_parallel: 2
   gpu_memory_utilization: 0.90
-  max_model_len: 262144
+  max_model_len: 175000
   max_num_batched_tokens: 16384
   max_num_seqs: 10
   block_size: 256
-  max_cudagraph_capture_size: 8
+  max_cudagraph_capture_size: 16
   kv_cache_dtype: fp8
   load_format: instanttensor
   tool_call_parser: poolside_v1
   reasoning_parser: poolside_v1
   tokenizer_mode: auto
-  speculative_config: '{"method": "dflash", "num_speculative_tokens": 8, "model": "poolside/Laguna-S-2.1-DFlash-FP8"}'
+  attn_backend: FLASH_ATTN
+  speculative_config: '{"method": "dflash", "num_speculative_tokens": 3, "model": "poolside/Laguna-S-2.1-DFlash-FP8"}'
   default_chat_template_kwargs: '{"enable_thinking": true, "preserve_thinking": true}'
 
 command: |
@@ -57,11 +58,10 @@ command: |
     --default-chat-template-kwargs '{default_chat_template_kwargs}' \
     --block-size {block_size} \
     --generation-config vllm \
-    --enable-flashinfer-autotune \
+    --attention-backend {attn_backend} \
     -ep
 
 env:
-  VLLM_BLOCKSCALE_FP8_GEMM_FLASHINFER: "0"
   PYTORCH_CUDA_ALLOC_CONF: 'expandable_segments:True,max_non_split_rounding_mb:2048,graph_capture_record_stream_reuse:True,pinned_use_background_threads:True,pinned_use_cuda_host_register:True'
   VLLM_MARLIN_USE_ATOMIC_ADD: "1"
   DG_JIT_USE_NVRTC: "0"
@@ -69,7 +69,6 @@ env:
   VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS: "0"
   VLLM_SKIP_INIT_MEMORY_CHECK: "1"
   VLLM_USE_FASTOKENS: "1"
-  VLLM_FLASHINFER_DECODE_USE_TENSOR_CORES: "1"
   INSTANTTENSOR_CHUNK_SIZE: "16777216"
   INSTANTTENSOR_IO_DEPTH: 5
 
