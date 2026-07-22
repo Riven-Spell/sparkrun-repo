@@ -38,7 +38,7 @@ defaults:
 
 command: |
   vllm serve {model} \
-    --served-model-name 'poolside/Laguna-S-2.1-FP8' \
+    --served-model-name 'poolside/Laguna-S-2.1' \
     --host {host} \
     --port {port} \
     -tp {tensor_parallel} \
