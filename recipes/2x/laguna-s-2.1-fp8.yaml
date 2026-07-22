@@ -32,7 +32,7 @@ defaults:
   tool_call_parser: poolside_v1
   reasoning_parser: poolside_v1
   tokenizer_mode: auto
-  attn_backend: FLASH_ATTN
+  attn_backend: FLASHINFER
   speculative_config: '{"method": "dflash", "num_speculative_tokens": 3, "model": "poolside/Laguna-S-2.1-DFlash-FP8"}'
   default_chat_template_kwargs: '{"enable_thinking": true, "preserve_thinking": true}'
 
@@ -59,7 +59,6 @@ command: |
     --block-size {block_size} \
     --generation-config vllm \
     --attention-backend {attn_backend} \
-    --attention-config.flash_attn_version 3 \
     -ep
 
 env:
@@ -72,6 +71,8 @@ env:
   VLLM_USE_FASTOKENS: "1"
   INSTANTTENSOR_CHUNK_SIZE: "16777216"
   INSTANTTENSOR_IO_DEPTH: 5
+  VLLM_BLOCKSCALE_FP8_GEMM_FLASHINFER: "0"
+  VLLM_FLASHINFER_DECODE_USE_TENSOR_CORES: "1"
 
 metadata:
   description: Laguna S 2.1-FP8
