@@ -59,6 +59,7 @@ command: |
     --block-size {block_size} \
     --generation-config vllm \
     --attention-backend {attn_backend} \
+    --attention-config.flash_attn_version 4 \
     -ep
 
 env:
