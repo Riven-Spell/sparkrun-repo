@@ -65,6 +65,7 @@ env:
   VLLM_USE_V2_MODEL_RUNNER: '1'
   VLLM_USE_FLASHINFER_SAMPLER: '0'
 mods:
+  - mods/vllm-pr-48624-fp4-moe-pad
   - mods/vllm-pr-40898-forward
   - mods/fix-gemma4-tool-parser
   - mods/gemma4-jinja
