@@ -1,7 +1,7 @@
 metadata:
   num_layers: 30
   quantization: modelopt
-  description: Gemma4-31B-it
+  description: Gemma4-26B-A4B-it (DSpark speculative decoding)
   model_dtype: nvfp4
   quant_bits: 4
   kv_dtype: auto
@@ -41,7 +41,7 @@ container: eugr-gemma4-025-main
 recipe_version: '2'
 builder: eugr
 runtime_config:
-  build_args: [ '--vllm-ref', '0762f2afeb74f790e8c5ebe2b95a012eb38d499e', '--flashinfer-ref', 'v0.6.14' ]
+  build_args: [ '--vllm-ref', '2f75e7f712fb2a013ce05ff357d94135231c8ae2', '--flashinfer-ref', 'v0.6.14' ]
 defaults:
   host: 0.0.0.0
   tool_call_parser: gemma4
@@ -57,15 +57,16 @@ defaults:
   max_num_seqs: 10
   attn_backend: TRITON_ATTN
   chat_template_args: '{"enable_thinking": true}'
-  speculative_config: '{"method": "mtp", "num_speculative_tokens": 5, "model": "google/gemma-4-26B-A4B-it-assistant"}'
+  speculative_config: '{"method": "dspark", "num_speculative_tokens": 6, "model": "makora-ai/gemma4-26b-a4b-dspark"}'
 env:
   VLLM_MARLIN_USE_ATOMIC_ADD: '1'
   #VLLM_USE_FASTOKENS: '1'
   VLLM_FLASHINFER_DECODE_USE_TENSOR_CORES: '1'
   VLLM_USE_V2_MODEL_RUNNER: '1'
+  VLLM_USE_FLASHINFER_SAMPLER: '0'
 mods:
   - mods/vllm-pr-40898-forward
   - mods/fix-gemma4-tool-parser
   - mods/gemma4-jinja
-  - mods/fix-gemma4-mtp
+  #- mods/fix-gemma4-mtp
   #- fastokens
