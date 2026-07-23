@@ -36,7 +36,7 @@ defaults:
   tensor_parallel: 4
   pipeline_parallel: 1
   gpu_memory_utilization: 0.90
-  max_model_len: 262144
+  max_model_len: 200000
   max_num_batched_tokens: 4096
   max_num_seqs: 1
   block_size: 256
@@ -60,7 +60,7 @@ command: |
     --attention-backend auto \
     --trust-remote-code \
     --gpu-memory-utilization {gpu_memory_utilization} \
-    --kv-cache-memory-bytes 12G \
+    --kv-cache-memory-bytes 10G \
     --enable-auto-tool-choice \
     --tool-call-parser {tool_call_parser} \
     --reasoning-parser {reasoning_parser} \
