@@ -84,8 +84,10 @@ mods:
   - deepgemm-sm121-fallbacks
   - glm52-draft-quant-mapping
   - glm52-b12x-stale-topk
+  - glm52-b12x-sparse
+  - glm52-sm12x-sparse
+  - glm52-nccl-update
   - vllm-pr-41834-dsv4-flash # Meant for dsv4 flash but includes fixes for GLM
-  - deepgemm-sm121-fallbacks # hazyumps bf16 fast-path fallbacks (replaces PR #41834 version)
 
 env:
   INSTANTTENSOR_CHUNK_SIZE: "16777216"
