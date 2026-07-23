@@ -61,9 +61,9 @@ env:
   TORCH_CUDA_ARCH_LIST: '12.1a'
   FLASHINFER_CUDA_ARCH_LIST: '12.1a'
 runtime: vllm
-mods: ['mods/vllm-pr-41834-dsv4-flash', 'mods/flashinfer-pr-3989-dsv4-topk256']
+mods: ['mods/vllm-pr-41834-dsv4-flash']
 runtime_config:
-  build_args: [ '--vllm-ref', '3d99b0499aff7ce3b91942b0385558dab4eecf76' ]
+  build_args: [ '--vllm-ref', '3d99b0499aff7ce3b91942b0385558dab4eecf76', '--flashinfer-ref', 'e4b8594ef150316677dc400b6bf68dc661c3977d', '--apply-flashinfer-pr', '3817' ]
 executor_config:
   ulimit:
     - memlock=-1:-1
