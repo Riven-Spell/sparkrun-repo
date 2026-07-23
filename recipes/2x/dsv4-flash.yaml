@@ -89,6 +89,11 @@ runtime: vllm
 mods: ['mods/vllm-pr-41834-dsv4-flash']
 runtime_config:
   build_args: [ '--vllm-ref', 'v0.25.1' ]
+executor_config:
+  ulimit:
+    - stack=32768
+    - nproc=65536
+    - nofile=1048576
 builder: eugr
 min_nodes: 2
 metadata:
