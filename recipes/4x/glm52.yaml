@@ -34,7 +34,7 @@ defaults:
   host: 0.0.0.0
   tensor_parallel: 4
   pipeline_parallel: 1
-  gpu_memory_utilization: 0.92
+  gpu_memory_utilization: 0.85
   max_model_len: 262144
   max_num_batched_tokens: 8192
   max_num_seqs: 1
@@ -73,7 +73,9 @@ command: |
     --distributed-executor-backend ray \
     --decode-context-parallel-size 1 \
     --dcp-kv-cache-interleave-size 1 \
-    --long-prefill-token-threshold 8192
+    --long-prefill-token-threshold 8192 \
+    --load-format instanttensor \
+    -ep
 
 mods:
   - b12x-install
