@@ -91,9 +91,7 @@ runtime_config:
   build_args: [ '--vllm-ref', 'v0.25.1' ]
 executor_config:
   ulimit:
-    - stack=32768
-    - nproc=65536
-    - nofile=1048576
+    - nofile=262144:262144
 builder: eugr
 min_nodes: 2
 metadata:
