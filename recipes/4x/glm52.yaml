@@ -65,7 +65,6 @@ command: |
     --enable-prefix-caching \
     --enable-chunked-prefill \
     --async-scheduling \
-    --max-cudagraph-capture-size {max_cudagraph_capture_size} \
     --speculative-config '{speculative_config}' \
     --compilation-config '{compilation_config}' \
     --hf-overrides '{hf_overrides}' \
