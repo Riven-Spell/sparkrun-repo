@@ -1,0 +1,127 @@
+# GLM-5.2 (QuantTrio Int4-Int8Mix) — 250K context, in-checkpoint MTP (k=3)
+# 4x DGX Spark (GB10, sm_121a), TP=4, DCP1, Ray distributed executor
+#
+# Architecture: 744B total / ~40B active MoE, 256 experts (top-9), 78 layers
+# DeepSeek V4-style sparse MLA + B12X sparse attention on sm_121a
+# MTP acceptance: ~85% (verified on ciprianveg's 8x GB10 prod cluster)
+#
+# Build: vLLM v0.25.1 + PR #41834 (compiled sparse-MLA + FP8 indexer kernels)
+# Patches: 03 (draft-quant-packed-mapping) + 06 (b12x-stale-topk-buffer)
+# Both applied as runtime MODs — Python-only, no wheel rebuild needed.
+#
+# Patches adapted from ciprianveg/gb10-glm-5.2 (8x GB10 production deploy).
+# Without 03: quantized MTP drafts silently build unquantized → acceptance collapses.
+# Without 06: _maybe_share_lm_head replaces the indexer buffer but the B12X
+# backend holds a stale reference → ~30% acceptance instead of ~85%.
+#
+# Sources:
+#   https://github.com/ciprianveg/gb10-glm-5.2 (production patches + recipe)
+#   https://huggingface.co/0xdfi/GLM-5.2-1M-context-NVFP4-4x-DGX-Spark
+
+model: QuantTrio/GLM-5.2-Int4-Int8Mix
+container: vllm-glm52-b12x
+builder: eugr
+min_nodes: 4
+recipe_version: '2'
+
+runtime_config:
+  build_args:
+    - '--vllm-ref'
+    - 'v0.25.1'
+    - '--apply-vllm-pr'
+    - '41834'
+
+defaults:
+  port: 8000
+  host: 0.0.0.0
+  tensor_parallel: 4
+  pipeline_parallel: 1
+  gpu_memory_utilization: 0.92
+  max_model_len: 262144
+  max_num_batched_tokens: 8192
+  max_num_seqs: 1
+  block_size: 256
+  max_cudagraph_capture_size: 16
+  kv_cache_dtype: fp8_ds_mla
+  tool_call_parser: glm47
+  reasoning_parser: glm45
+  speculative_config: '{"method":"mtp","num_speculative_tokens":3,"quantization":"compressed-tensors","draft_attention_backend":"B12X_MLA_SPARSE","draft_tensor_parallel_size":1}'
+  compilation_config: '{"cudagraph_mode":"FULL","max_cudagraph_capture_size":16}'
+  hf_overrides: '{"index_topk_pattern":"FFFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSS"}'
+
+command: |
+  vllm serve {model} \
+    --served-model-name glm-5.2-quanttrio \
+    --host {host} --port {port} \
+    -tp {tensor_parallel} -pp {pipeline_parallel} \
+    --max-model-len {max_model_len} \
+    --max-num-batched-tokens {max_num_batched_tokens} \
+    --max-num-seqs {max_num_seqs} \
+    --kv-cache-dtype {kv_cache_dtype} \
+    --attention-backend B12X_MLA_SPARSE \
+    --trust-remote-code \
+    --gpu-memory-utilization {gpu_memory_utilization} \
+    --enable-auto-tool-choice \
+    --tool-call-parser {tool_call_parser} \
+    --reasoning-parser {reasoning_parser} \
+    --enable-prefix-caching \
+    --enable-chunked-prefill \
+    --async-scheduling \
+    --max-cudagraph-capture-size {max_cudagraph_capture_size} \
+    --speculative-config '{speculative_config}' \
+    --compilation-config '{compilation_config}' \
+    --hf-overrides '{hf_overrides}' \
+    --block-size {block_size} \
+    --generation-config vllm \
+    --distributed-executor-backend ray \
+    --decode-context-parallel-size 1 \
+    --dcp-kv-cache-interleave-size 1 \
+    --long-prefill-token-threshold 8192
+
+mods:
+  - b12x-install
+  - glm52-draft-quant-mapping
+  - glm52-b12x-stale-topk
+
+env:
+  VLLM_ALLOW_LONG_MAX_MODEL_LEN: "1"
+  VLLM_USE_B12X_SPARSE_INDEXER: "1"
+  VLLM_USE_V2_MODEL_RUNNER: "1"
+  VLLM_SPARSE_INDEXER_MAX_LOGITS_MB: "256"
+  VLLM_B12X_MLA_SPEC_EXTEND_AS_DECODE: "1"
+  VLLM_USE_RAY_V2_EXECUTOR_BACKEND: "1"
+  VLLM_USE_RAY_COMPILED_DAG_OVERLAP_COMM: "1"
+  RAY_memory_monitor_refresh_ms: "0"
+  VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS: "0"
+  VLLM_EXECUTE_MODEL_TIMEOUT_SECONDS: "1800"
+  VLLM_MARLIN_USE_ATOMIC_ADD: "1"
+  PYTORCH_CUDA_ALLOC_CONF: 'expandable_segments:True'
+  TORCH_CUDA_ARCH_LIST: '12.1a'
+  CUTE_DSL_ARCH: 'sm_121a'
+  OMP_NUM_THREADS: "8"
+  OMP_WAIT_POLICY: 'passive'
+  NCCL_NET: 'IB'
+  NCCL_IB_DISABLE: "0"
+  NCCL_IB_GID_INDEX: "3"
+  NCCL_CROSS_NIC: "1"
+  NCCL_CUMEM_ENABLE: "0"
+  NCCL_IGNORE_CPU_AFFINITY: "1"
+  NCCL_DEBUG: WARN
+  NCCL_BUFFSIZE: "16777216"
+  NCCL_NVLS_ENABLE: "0"
+  NCCL_MAX_NCHANNELS: "4"
+  NCCL_MIN_NCHANNELS: "4"
+
+executor_config:
+  ulimit:
+    - memlock=-1:-1
+    - nofile=262144:262144
+
+metadata:
+  description: GLM-5.2 (QuantTrio Int4-Int8Mix) - 250K ctx, MTP k=3, 4x DGX Spark
+  model_params: "744B"
+  model_dtype: int4-int8mix
+  kv_dtype: fp8_ds_mla
+  num_layers: 78
+  quantization: compressed-tensors
+  quant_bits: 4
