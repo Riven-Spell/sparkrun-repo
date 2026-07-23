@@ -51,7 +51,7 @@ defaults:
 
 command: |
   vllm serve {model} \
-    --served-model-name glm-5.2-quanttrio \
+    --served-model-name zai-org/GLM-5.2 \
     --host {host} --port {port} \
     -tp {tensor_parallel} -pp {pipeline_parallel} \
     --max-model-len {max_model_len} \
