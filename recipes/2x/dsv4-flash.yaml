@@ -63,7 +63,7 @@ env:
 runtime: vllm
 mods: ['mods/vllm-pr-41834-dsv4-flash']
 runtime_config:
-  build_args: [ '--vllm-ref', '3d99b0499aff7ce3b91942b0385558dab4eecf76', '--flashinfer-ref', '27e035e2a9c52115f716925ca255744acf87f5e6', '--apply-flashinfer-pr', '3817' ]
+  build_args: [ '--vllm-ref', '3d99b0499aff7ce3b91942b0385558dab4eecf76', '--flashinfer-ref', 'v0.6.15.post1', '--apply-flashinfer-pr', '3989' ]
 executor_config:
   ulimit:
     - memlock=-1:-1
