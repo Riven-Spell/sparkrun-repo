@@ -49,7 +49,8 @@ command: |
     --block-size {block_size} \
     --generation-config vllm \
     --enable-flashinfer-autotune \
-    -ep
+    -ep \
+    --master-addr 192.168.100.1
 env:
   PYTORCH_CUDA_ALLOC_CONF: 'expandable_segments:True'
   VLLM_ALLOW_LONG_MAX_MODEL_LEN: "1"
