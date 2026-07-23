@@ -34,7 +34,6 @@ defaults:
   host: 0.0.0.0
   tensor_parallel: 4
   pipeline_parallel: 1
-  gpu_memory_utilization: 0.85
   max_model_len: 262144
   max_num_batched_tokens: 8192
   max_num_seqs: 1
@@ -58,7 +57,7 @@ command: |
     --kv-cache-dtype {kv_cache_dtype} \
     --attention-backend auto \
     --trust-remote-code \
-    --gpu-memory-utilization {gpu_memory_utilization} \
+    --kv-cache-memory-bytes 14G \
     --enable-auto-tool-choice \
     --tool-call-parser {tool_call_parser} \
     --reasoning-parser {reasoning_parser} \
@@ -78,12 +77,18 @@ command: |
     -ep
 
 mods:
+  - fastokens
   - b12x-install
   - glm52-draft-quant-mapping
   - glm52-b12x-stale-topk
   - vllm-pr-41834-dsv4-flash # Meant for dsv4 flash but includes fixes for GLM
 
 env:
+  INSTANTTENSOR_CHUNK_SIZE: "16777216"
+  INSTANTTENSOR_IO_DEPTH: 5
+  PYTORCH_CUDA_ALLOC_CONF: 'expandable_segments:True,max_non_split_rounding_mb:2048,graph_capture_record_stream_reuse:True,pinned_use_background_threads:True,pinned_use_cuda_host_register:True'
+  VLLM_USE_FASTOKENS: "1"
+  DG_JIT_USE_NVRTC: "0"
   VLLM_ALLOW_LONG_MAX_MODEL_LEN: "1"
   VLLM_USE_B12X_SPARSE_INDEXER: "1"
   VLLM_USE_V2_MODEL_RUNNER: "1"
