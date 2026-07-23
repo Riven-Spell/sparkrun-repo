@@ -81,7 +81,7 @@ command: |
 mods:
   - fastokens
   - b12x-install
-  - deepgemm-sm121-symlink
+  - deepgemm-sm121-fallbacks
   - glm52-draft-quant-mapping
   - glm52-b12x-stale-topk
   - vllm-pr-41834-dsv4-flash # Meant for dsv4 flash but includes fixes for GLM
