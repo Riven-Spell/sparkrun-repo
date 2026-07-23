@@ -60,7 +60,7 @@ command: |
     --attention-backend auto \
     --trust-remote-code \
     --gpu-memory-utilization {gpu_memory_utilization} \
-    --kv-cache-memory-bytes 14G \
+    --kv-cache-memory-bytes 12G \
     --enable-auto-tool-choice \
     --tool-call-parser {tool_call_parser} \
     --reasoning-parser {reasoning_parser} \
