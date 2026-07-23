@@ -7,7 +7,8 @@
 #
 # Build: vLLM v0.25.1 + PR #41834 (compiled sparse-MLA + FP8 indexer kernels)
 # Patches: 03 (draft-quant-packed-mapping) + 06 (b12x-stale-topk-buffer)
-# Both applied as runtime MODs — Python-only, no wheel rebuild needed.
+# + deepgemm-sm121-fallbacks (hazyumps bf16 fast-path, 1GB chunk buffers)
+# All applied as runtime MODs — Python-only, no wheel rebuild needed.
 #
 # Patches adapted from ciprianveg/gb10-glm-5.2 (8x GB10 production deploy).
 # Without 03: quantized MTP drafts silently build unquantized → acceptance collapses.
@@ -84,6 +85,7 @@ mods:
   - glm52-draft-quant-mapping
   - glm52-b12x-stale-topk
   - vllm-pr-41834-dsv4-flash # Meant for dsv4 flash but includes fixes for GLM
+  - deepgemm-sm121-fallbacks # hazyumps bf16 fast-path fallbacks (replaces PR #41834 version)
 
 env:
   INSTANTTENSOR_CHUNK_SIZE: "16777216"
