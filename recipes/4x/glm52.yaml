@@ -27,9 +27,7 @@ recipe_version: '2'
 runtime_config:
   build_args:
     - '--vllm-ref'
-    - 'v0.25.1'
-    - '--apply-vllm-pr'
-    - '41834'
+    - '3d99b0499aff7ce3b91942b0385558dab4eecf76'
 
 defaults:
   port: 8000
@@ -82,6 +80,7 @@ mods:
   - b12x-install
   - glm52-draft-quant-mapping
   - glm52-b12x-stale-topk
+  - vllm-pr-41834-dsv4-flash # Meant for dsv4 flash but includes fixes for GLM
 
 env:
   VLLM_ALLOW_LONG_MAX_MODEL_LEN: "1"
