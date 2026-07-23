@@ -49,6 +49,7 @@ command: |
     --block-size {block_size} \
     --generation-config vllm \
     --enable-flashinfer-autotune \
+    --distributed-executor-backend ray \
     -ep
 env:
   PYTORCH_CUDA_ALLOC_CONF: 'expandable_segments:True'
