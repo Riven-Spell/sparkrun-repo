@@ -43,7 +43,7 @@ defaults:
   kv_cache_dtype: fp8_ds_mla
   tool_call_parser: glm47
   reasoning_parser: glm45
-  speculative_config: '{"method":"mtp","num_speculative_tokens":3,"quantization":"compressed-tensors","draft_attention_backend":"B12X_MLA_SPARSE","draft_tensor_parallel_size":1}'
+  speculative_config: '{"method":"mtp","num_speculative_tokens":3,"quantization":"compressed-tensors"}'
   compilation_config: '{"cudagraph_mode":"FULL","max_cudagraph_capture_size":16}'
   hf_overrides: '{"index_topk_pattern":"FFFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSS"}'
 
