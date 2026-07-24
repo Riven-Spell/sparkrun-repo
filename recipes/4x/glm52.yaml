@@ -75,6 +75,7 @@ command: |
     --dcp-kv-cache-interleave-size 1 \
     --long-prefill-token-threshold 8192 \
     --load-format instanttensor \
+    --enforce-eager \
     -ep
 
 mods:
