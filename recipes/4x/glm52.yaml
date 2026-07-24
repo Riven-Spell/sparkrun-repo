@@ -86,6 +86,7 @@ mods:
   - glm52-b12x-stale-topk
   - glm52-b12x-sparse
   - glm52-sm12x-sparse
+  - upgrade-transformers
   - vllm-pr-41834-dsv4-flash # Meant for dsv4 flash but includes fixes for GLM
 
 env:
