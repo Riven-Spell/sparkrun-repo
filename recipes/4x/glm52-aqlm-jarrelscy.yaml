@@ -19,16 +19,16 @@
 #   https://github.com/ciprianveg/gb10-glm-5.2 (production patches + recipe)
 #   https://huggingface.co/0xdfi/GLM-5.2-1M-context-NVFP4-4x-DGX-Spark
 
-model: QuantTrio/GLM-5.2-Int4-Int8Mix
-container: vllm-glm52-b12x
+model: jarrelscy/GLM-5.2-NVFP4-AQLM-hybrid-250k
+container: vllm-glm52-b12x:garrelscy # A MANUAL TOUCH PREBUILD IS REQUIRED: use https://github.com/Riven-Spell/spark-vllm-docker/tree/spiralglide/support-alt-repo ; `./build-and-copy.sh --vllm-repo "https://github.com/jarrelscy/vllm-glm52-sm120.git" --vllm-ref "cudagraphs-v2" -t "vllm-glm52-b12x:jarrelscy"`
 builder: eugr
 min_nodes: 4
 recipe_version: '2'
 
-runtime_config:
-  build_args:
-    - '--vllm-ref'
-    - '3d99b0499aff7ce3b91942b0385558dab4eecf76'
+# runtime_config:
+#   build_args:
+#     - '--vllm-ref'
+#     - '3d99b0499aff7ce3b91942b0385558dab4eecf76'
 
 defaults:
   port: 8000
@@ -41,7 +41,7 @@ defaults:
   max_num_seqs: 10
   block_size: 256
   max_cudagraph_capture_size: 16
-  kv_cache_dtype: nvfp4
+  kv_cache_dtype: fp8
   tool_call_parser: glm47
   reasoning_parser: glm45
   speculative_config: '{"method":"mtp","num_speculative_tokens":3,"quantization":"compressed-tensors"}'
