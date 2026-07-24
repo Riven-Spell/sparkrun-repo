@@ -19,7 +19,7 @@
 #   https://github.com/ciprianveg/gb10-glm-5.2 (production patches + recipe)
 #   https://huggingface.co/0xdfi/GLM-5.2-1M-context-NVFP4-4x-DGX-Spark
 
-model: QuantTrio/GLM-5.2-Int4-Int8Mix
+model: jarrelscy/GLM-5.2-NVFP4-AQLM-hybrid
 container: vllm-glm52-b12x
 builder: eugr
 min_nodes: 4
@@ -35,17 +35,17 @@ defaults:
   host: 0.0.0.0
   tensor_parallel: 4
   pipeline_parallel: 1
-  gpu_memory_utilization: 0.93
+  gpu_memory_utilization: 0.90
   max_model_len: 200000
-  max_num_batched_tokens: 4096
-  max_num_seqs: 1
+  max_num_batched_tokens: 8192
+  max_num_seqs: 10
   block_size: 256
   max_cudagraph_capture_size: 16
   kv_cache_dtype: fp8_ds_mla
   tool_call_parser: glm47
   reasoning_parser: glm45
   speculative_config: '{"method":"mtp","num_speculative_tokens":3,"quantization":"compressed-tensors"}'
-  compilation_config: '{"cudagraph_mode":"FULL","max_cudagraph_capture_size":16}'
+  compilation_config: '{"cudagraph_mode":"FULL_AND_PIECEWISE","max_cudagraph_capture_size":16}'
   hf_overrides: '{"index_topk_pattern":"FFFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSS"}'
 
 command: |
@@ -91,7 +91,7 @@ mods:
 env:
   INSTANTTENSOR_CHUNK_SIZE: "16777216"
   INSTANTTENSOR_IO_DEPTH: 5
-  PYTORCH_CUDA_ALLOC_CONF: 'expandable_segments:True,max_non_split_rounding_mb:2048,graph_capture_record_stream_reuse:True,pinned_use_background_threads:True,pinned_use_cuda_host_register:True'
+  PYTORCH_CUDA_ALLOC_CONF: 'expandable_segments:True,max_non_split_rounding_mb:1024,graph_capture_record_stream_reuse:True,pinned_use_background_threads:True,pinned_use_cuda_host_register:True'
   VLLM_USE_FASTOKENS: "1"
   DG_JIT_USE_NVRTC: "0"
   VLLM_ALLOW_LONG_MAX_MODEL_LEN: "1"
