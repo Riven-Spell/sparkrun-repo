@@ -44,7 +44,7 @@ defaults:
   kv_cache_dtype: fp8
   tool_call_parser: glm47
   reasoning_parser: glm45
-  speculative_config: '{"model": "RedHatAI/GLM-5.2-speculator.dspark", "method": "dspark", "num_speculative_tokens": 5, "draft_tensor_parallel_size": 4}'
+  speculative_config: '{"model": "RedHatAI/GLM-5.2-speculator.dspark", "method": "dspark", "num_speculative_tokens": 5}'
   compilation_config: '{"cudagraph_mode":"FULL","max_cudagraph_capture_size":16}'
   hf_overrides: '{"index_topk_pattern":"FFFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSS"}'
 
