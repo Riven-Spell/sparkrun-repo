@@ -5,7 +5,7 @@ builder: eugr
 solo_only: false
 cluster_only: false
 
-models: Goombahh/Goombliterated-MiniMax-M3-NVFP4
+model: Goombahh/Goombliterated-MiniMax-M3-NVFP4
 
 runtime_config:
   build_args: [ ]
@@ -40,9 +40,9 @@ defaults:
   performance_mode: interactivity
   default_chat_template_kwargs: '{ "enable_thinking": true }'
   moe_backend: flashinfer_b12x
-  attention_config: '{ "backend": "FLASHINFER" }'
+  attention_backend: FLASHINFER
   compilation_config: '{"cudagraph_mode": "FULL_AND_PIECEWISE", "custom_ops": ["all"], "max_cudagraph_capture_size": 16}'
-  speculative_config: '{"mode": "dspark", "num_speculative_tokens": 5, "model": "nvidia/MiniMax-M3-DSpark"}'
+  speculative_config: '{"method": "dspark", "num_speculative_tokens": 5, "model": "nvidia/MiniMax-M3-DSpark"}'
 
 command: |
   vllm serve {model} \
@@ -57,8 +57,8 @@ command: |
     --max-num-seqs {max_num_seqs} \
     --max-num-batched-tokens {max_num_batched_tokens} \
     --block-size {block_size} \
-    --moe_backend {moe_backend}
-    -ac '{attention_config}' \
+    --moe_backend {moe_backend} \
+    --attention-backend {attention_backend} \
     -cc '{compilation_config}' \
     -sc '{speculative_config}' \
     --performance-mode {performance_mode} \
