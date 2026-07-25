@@ -1,0 +1,71 @@
+name: Minimax M3
+description: Minimax M3 for 4x spark cluster
+container: vllm-dspark-runtime:minimax_m3
+builder: eugr
+solo_only: false
+cluster_only: false
+
+models: Goombahh/Goombliterated-MiniMax-M3-NVFP4
+
+runtime_config:
+  build_args: [ ]
+
+executor_config:
+  ulimit:
+    - memlock=-1:-1
+    - nofile=262144:262144
+
+mods:
+  - fastokens
+  - sparkinfer-install
+
+env:
+  PYTORCH_CUDA_ALLOC_CONF: 'expandable_segments:True'
+  VLLM_USE_FASTOKENS: '1'
+  VLLM_USE_V2_MODEL_RUNNER: '1'
+  VLLM_USE_B12X_MOE: '1'
+  VLLM_USE_B12X_SPARSE_INDEXER: '1'
+
+defaults:
+  host: 0.0.0.0
+  port: 8000
+  tensor_parallel: 4
+  pipeline_parallel: 1
+  gpu_memory_utilization: 0.90
+  kv_cache_dtype: nvfp4
+  max_model_len: 262144
+  max_num_seqs: 10
+  max_num_batched_tokens: 16384
+  block_size: 256
+  performance_mode: interactivity
+  default_chat_template_kwargs: '{ "enable_thinking": true }'
+  moe_backend: flashinfer_b12x
+  attention_config: '{ "backend": "FLASHINFER" }'
+  compilation_config: '{"cudagraph_mode": "FULL_AND_PIECEWISE", "custom_ops": ["all"], "max_cudagraph_capture_size": 16}'
+  speculative_config: '{"mode": "dspark", "num_speculative_tokens": 5, "model": "nvidia/MiniMax-M3-DSpark"}'
+
+command: |
+  vllm serve {model} \
+    --quantization modelopt_fp4 \
+    --served-model-name MiniMaxAI/MiniMax-M3 \
+    --host {host} --port {port} \
+    --tensor-parallel-size {tensor_parallel} \
+    --pipeline-parallel-size {pipeline_parallel} \
+    --gpu-memory-utilization {gpu_memory_utilization} \
+    --kv-cache-dtype {kv_cache_dtype} \
+    --max-model-len {max_model_len} \
+    --max-num-seqs {max_num_seqs} \
+    --max-num-batched-tokens {max_num_batched_tokens} \
+    --block-size {block_size} \
+    --moe_backend {moe_backend}
+    -ac '{attention_config}' \
+    -cc '{compilation_config}' \
+    -sc '{speculative_config}' \
+    --performance-mode {performance_mode} \
+    --enable-prefix-caching \
+    --enable-chunked-prefill \
+    --enable-flashinfer-autotune \
+    --trust-remote-code \
+    -ep \
+    -O3
+

@@ -80,7 +80,7 @@ command: |
 
 mods:
   - fastokens
-  - b12x-install
+  - sparkinfer-install
   - deepgemm-sm121-fallbacks
   - glm52-draft-quant-mapping
   - glm52-b12x-stale-topk
