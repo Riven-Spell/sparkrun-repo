@@ -15,6 +15,9 @@ set -euo pipefail
 #!/bin/bash
 set -e
 
+apt update
+apt install unzip
+
 cd ~
 pip download nvidia-nccl-cu13==2.30.4 -d /tmp/nccl --no-deps
 mkdir -p /var/tmp/nccl-2.30.4
