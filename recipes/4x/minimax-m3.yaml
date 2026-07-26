@@ -1,14 +1,10 @@
 name: Minimax M3
 description: Minimax M3 for 4x spark cluster
-container: vllm-dspark-runtime:minimax_m3
-builder: eugr
+container: ghcr.io/mpfaffenberger/minimax-m3-nvfp4-dspark-vllm@sha256:de616b32bf1ef9cdf809830a1faf1e57f74c136b8e415e854607ebc4efd9648b
 solo_only: false
 cluster_only: false
 
 model: ressl/MiniMax-M3-uncensored-NVFP4
-
-runtime_config:
-  build_args: [ ]
 
 executor_config:
   ulimit:
