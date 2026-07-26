@@ -14,6 +14,12 @@ executor_config:
 mods:
   - fastokens
   - sparkinfer-install
+  - mods/mpfaffenberger/fix-nccl-2.30.4
+  - mods/mpfaffenberger/fix-minimax-m3-nvfp4-correctness-48929
+  - mods/mpfaffenberger/skip-empty-dspark-cudagraph-capture
+  - mods/mpfaffenberger/install-vllm-rust-tool-parser
+  - mods/mpfaffenberger/fix-minimax-m3-streaming-reasoning
+  - mods/mpfaffenberger/rename-reasoning-to-reasoning-content
 
 env:
   PYTORCH_CUDA_ALLOC_CONF: 'expandable_segments:True,max_non_split_rounding_mb:2048,graph_capture_record_stream_reuse:True,pinned_use_background_threads:True,pinned_use_cuda_host_register:True'
