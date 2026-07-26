@@ -32,11 +32,11 @@ defaults:
   load_format: instanttensor
   tensor_parallel: 4
   pipeline_parallel: 1
-  gpu_memory_utilization: 0.90
+  gpu_memory_utilization: 0.8
   kv_cache_dtype: fp8
   max_model_len: 262144
-  max_num_seqs: 10
-  max_num_batched_tokens: 16384
+  max_num_seqs: 5
+  max_num_batched_tokens: 8192
   block_size: 256
   performance_mode: interactivity
   default_chat_template_kwargs: '{ "enable_thinking": true }'
