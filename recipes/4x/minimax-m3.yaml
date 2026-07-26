@@ -43,14 +43,14 @@ defaults:
   gpu_memory_utilization: 0.8
   kv_cache_dtype: fp8
   max_model_len: 262144
-  max_num_seqs: 5
-  max_num_batched_tokens: 8192
+  max_num_seqs: 4
+  max_num_batched_tokens: 4096
   block_size: 256
   performance_mode: interactivity
   default_chat_template_kwargs: '{ "enable_thinking": true }'
   moe_backend: flashinfer_b12x
   attention_backend: FLASHINFER
-  compilation_config: '{"cudagraph_mode": "FULL_AND_PIECEWISE", "custom_ops": ["all"], "max_cudagraph_capture_size": 16}'
+  compilation_config: '{"cudagraph_mode": "FULL", "custom_ops": ["all"], "max_cudagraph_capture_size": 8}'
   speculative_config: '{"method": "dspark", "num_speculative_tokens": 5, "model": "nvidia/MiniMax-M3-DSpark"}'
 
 command: |
