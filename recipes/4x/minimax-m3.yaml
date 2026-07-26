@@ -33,6 +33,17 @@ env:
   FLASHINFER_CUDA_ARCH_LIST: '12.1a'
   VLLM_SPARSE_INDEXER_MAX_LOGITS_MB: "256"
   VLLM_FLASHINFER_DECODE_USE_TENSOR_CORES: "1"
+  NCCL_CUMEM_ENABLE: '0'
+  VLLM_MINIMAX_M3_ENABLE_TORCH_COMPILE: '1'
+  VLLM_USE_AOT_COMPILE: '1'
+  VLLM_USE_BREAKABLE_CUDAGRAPH: '0'
+  VLLM_USE_B12X_MOE: '1'
+  VLLM_USE_B12X_MINIMAX_M3_MSA: '1'
+  VLLM_USE_B12X_SPARSE_INDEXER: '1'
+  VLLM_USE_B12X_FP8_GEMM: '0'
+  VLLM_ENABLE_PCIE_ALLREDUCE: '0'
+  VLLM_B12X_CUDAGRAPH_PIECEWISE_PREWARM: '1'
+  B12X_LOG_CUTE_COMPILES_AFTER_ENGINE_START: '1'
 
 defaults:
   host: 0.0.0.0
@@ -45,7 +56,7 @@ defaults:
   max_model_len: 262144
   max_num_seqs: 4
   max_num_batched_tokens: 4096
-  block_size: 256
+  block_size: 128
   performance_mode: interactivity
   default_chat_template_kwargs: '{ "enable_thinking": true }'
   moe_backend: flashinfer_b12x
