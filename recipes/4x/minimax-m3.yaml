@@ -29,10 +29,11 @@ env:
 defaults:
   host: 0.0.0.0
   port: 8000
+  load_format: instanttensor
   tensor_parallel: 4
   pipeline_parallel: 1
   gpu_memory_utilization: 0.90
-  kv_cache_dtype: nvfp4
+  kv_cache_dtype: fp8
   max_model_len: 262144
   max_num_seqs: 10
   max_num_batched_tokens: 16384
@@ -51,6 +52,7 @@ command: |
     --host {host} --port {port} \
     --reasoning-parser minimax_m3 \
     --tool-call-parser minimax_m3 \
+    --load-format {load_format} \
     --tensor-parallel-size {tensor_parallel} \
     --pipeline-parallel-size {pipeline_parallel} \
     --gpu-memory-utilization {gpu_memory_utilization} \
