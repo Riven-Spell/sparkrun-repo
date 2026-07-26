@@ -5,7 +5,7 @@ builder: eugr
 solo_only: false
 cluster_only: false
 
-model: Goombahh/Goombliterated-MiniMax-M3-NVFP4
+model: ressl/MiniMax-M3-uncensored-NVFP4
 
 runtime_config:
   build_args: [ ]
@@ -47,7 +47,6 @@ defaults:
 
 command: |
   vllm serve {model} \
-    --quantization modelopt_fp4 \
     --served-model-name MiniMaxAI/MiniMax-M3 \
     --host {host} --port {port} \
     --reasoning-parser minimax_m3 \
