@@ -59,7 +59,7 @@ defaults:
   max_num_batched_tokens: 4096
   block_size: 128
   performance_mode: interactivity
-  limit_mm_per_prompt: '{"image": {"count": 3}, "video": {"count": 1}, "audio": {"count": 3}}'
+  limit_mm_per_prompt: '{"image": {"count": 3}, "video": {"count": 1, "num_frames": 32, "width": 640, "height": 640}, "audio": {"count": 1}}'
   default_chat_template_kwargs: '{ "enable_thinking": true }'
   moe_backend: flashinfer_b12x
   attention_backend: FLASHINFER
