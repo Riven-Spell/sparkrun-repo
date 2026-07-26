@@ -59,7 +59,7 @@ defaults:
   max_num_batched_tokens: 4096
   block_size: 128
   performance_mode: interactivity
-  limit_mm_per_prompt: '{"image": 3, "video": 3, "audio": 3}'
+  limit_mm_per_prompt: '{"image": {"count": 3}, "video": {"count": 1}, "audio": {"count": 3}}'
   default_chat_template_kwargs: '{ "enable_thinking": true }'
   moe_backend: flashinfer_b12x
   attention_backend: FLASHINFER
@@ -86,7 +86,7 @@ command: |
     -cc '{compilation_config}' \
     -sc '{speculative_config}' \
     --performance-mode {performance_mode} \
-    --limit-mm-per-prompt {limit_mm_per_prompt} \
+    --limit-mm-per-prompt '{limit_mm_per_prompt}' \
     --enable-prefix-caching \
     --enable-chunked-prefill \
     --enable-flashinfer-autotune \
