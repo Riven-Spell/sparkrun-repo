@@ -20,11 +20,19 @@ mods:
   - sparkinfer-install
 
 env:
-  PYTORCH_CUDA_ALLOC_CONF: 'expandable_segments:True'
+  PYTORCH_CUDA_ALLOC_CONF: 'expandable_segments:True,max_non_split_rounding_mb:2048,graph_capture_record_stream_reuse:True,pinned_use_background_threads:True,pinned_use_cuda_host_register:True'
+  VLLM_MARLIN_USE_ATOMIC_ADD: "1"
   VLLM_USE_FASTOKENS: '1'
   VLLM_USE_V2_MODEL_RUNNER: '1'
   VLLM_USE_B12X_MOE: '1'
   VLLM_USE_B12X_SPARSE_INDEXER: '1'
+  B12X_W4A16_TC_DECODE: "0"
+  DG_JIT_USE_NVRTC: "0"
+  TILELANG_CLEANUP_TEMP_FILES: "1"
+  TORCH_CUDA_ARCH_LIST: '12.1a'
+  FLASHINFER_CUDA_ARCH_LIST: '12.1a'
+  VLLM_SPARSE_INDEXER_MAX_LOGITS_MB: "256"
+  VLLM_FLASHINFER_DECODE_USE_TENSOR_CORES: "1"
 
 defaults:
   host: 0.0.0.0
