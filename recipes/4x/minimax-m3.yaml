@@ -49,8 +49,8 @@ command: |
     --quantization modelopt_fp4 \
     --served-model-name MiniMaxAI/MiniMax-M3 \
     --host {host} --port {port} \
-    --reasoning-parser minimax-m3 \
-    --tool-call-parser minimax-m3 \
+    --reasoning-parser minimax_m3 \
+    --tool-call-parser minimax_m3 \
     --tensor-parallel-size {tensor_parallel} \
     --pipeline-parallel-size {pipeline_parallel} \
     --gpu-memory-utilization {gpu_memory_utilization} \
