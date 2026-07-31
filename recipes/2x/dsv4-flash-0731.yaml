@@ -62,6 +62,7 @@ env:
   TORCH_CUDA_ARCH_LIST: '12.1a'
   FLASHINFER_CUDA_ARCH_LIST: '12.1a'
   VLLM_USE_V2_MODEL_RUNNER: '1'
+  VLLM_USE_AOT_COMPILE: '1'
 runtime: vllm
 mods: ['mods/vllm-pr-41834-dsv4-flash', 'mods/tonyd2wild/dspark-shared-expert-gate-up-proj']
 runtime_config:
