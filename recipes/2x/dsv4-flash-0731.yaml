@@ -1,0 +1,81 @@
+# Heavily influenced by https://huggingface.co/drowzeys/DeepSeek-V4-Flash-DSpark-NVFP4-KV-1.5M-CTX-2xDGX-Spark
+# Achieves ~40-50 tps; ~[30, 65] tps bounds
+
+model: deepseek-ai/DeepSeek-V4-Flash-0731
+container: vllm-dspark-runtime:dspark-nvfp4
+defaults:
+  port: 8000
+  host: 0.0.0.0
+  tensor_parallel: 2
+  gpu_memory_utilization: 0.90
+  max_model_len: 250000
+  max_num_batched_tokens: 16384
+  max_num_seqs: 10
+  block_size: 256
+  tool_call_parser: deepseek_v4
+  pipeline_parallel: 1
+  data_parallel: 1
+  max_cudagraph_capture_size: 8
+  load_format: instanttensor
+  kv_cache_dtype: fp8
+  reasoning_parser: deepseek_v4
+  tokenizer_mode: deepseek_v4
+  speculative_config: '{"method": "dspark", "num_speculative_tokens": 5}'
+  compilation_config: '{"cudagraph_mode":"FULL_AND_PIECEWISE","custom_ops":["all"]}'
+  default_chat_template_kwargs: '{"enable_thinking": true, "preserve_thinking": true}'
+command: |
+  vllm serve {model} \
+    --served-model-name 'deepseek-ai/DeepSeek-V4-Flash' \
+    --host {host} \
+    --port {port} \
+    --max-model-len {max_model_len} \
+    --max-num-seqs {max_num_seqs} \
+    --max-num-batched-tokens {max_num_batched_tokens} \
+    --trust-remote-code \
+    --gpu-memory-utilization {gpu_memory_utilization} \
+    --enable-auto-tool-choice \
+    --tool-call-parser {tool_call_parser} \
+    --tokenizer-mode {tokenizer_mode} \
+    --reasoning-parser {reasoning_parser} \
+    --kv-cache-dtype {kv_cache_dtype} \
+    --load-format {load_format} \
+    --speculative-config '{speculative_config}' \
+    --compilation-config '{compilation_config}' \
+    --enable-prefix-caching \
+    --max-cudagraph-capture-size {max_cudagraph_capture_size} \
+    -tp {tensor_parallel} \
+    -pp {pipeline_parallel} \
+    --default-chat-template-kwargs '{default_chat_template_kwargs}' \
+    --block-size {block_size} \
+    --generation-config vllm \
+    --enable-flashinfer-autotune \
+    --attention-backend B12X_MLA_SPARSE \
+    -ep
+env:
+  PYTORCH_CUDA_ALLOC_CONF: 'expandable_segments:True'
+  VLLM_ALLOW_LONG_MAX_MODEL_LEN: "1"
+  VLLM_SPARSE_INDEXER_MAX_LOGITS_MB: "256"
+  VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS: "0"
+  B12X_W4A16_TC_DECODE: "0"
+  DG_JIT_USE_NVRTC: "0"
+  TILELANG_CLEANUP_TEMP_FILES: "1"
+  TORCH_CUDA_ARCH_LIST: '12.1a'
+  FLASHINFER_CUDA_ARCH_LIST: '12.1a'
+  VLLM_USE_V2_MODEL_RUNNER: '1'
+  VLLM_USE_B12X_MOE: '1'
+  VLLM_USE_B12X_SPARSE_INDEXER: '1'
+runtime: vllm
+mods: ['mods/vllm-pr-41834-dsv4-flash']
+runtime_config:
+  build_args: [ '--vllm-ref', '3d99b0499aff7ce3b91942b0385558dab4eecf76', '--apply-flashinfer-pr', '3989' ]
+executor_config:
+  ulimit:
+    - memlock=-1:-1
+    - nofile=262144:262144
+ssh:
+  user: clusteruser
+builder: eugr
+min_nodes: 2
+metadata:
+  description: DeepSeek-V4-Flash
+recipe_version: '2'
