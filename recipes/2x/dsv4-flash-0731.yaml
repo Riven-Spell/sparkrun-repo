@@ -9,8 +9,8 @@ defaults:
   tensor_parallel: 2
   gpu_memory_utilization: 0.90
   max_model_len: 250000
-  max_num_batched_tokens: 16384
-  max_num_seqs: 10
+  max_num_batched_tokens: 8192
+  max_num_seqs: 6
   block_size: 256
   tool_call_parser: deepseek_v4
   pipeline_parallel: 1
@@ -51,11 +51,12 @@ command: |
     --enable-flashinfer-autotune \
     -ep
 env:
-  PYTORCH_CUDA_ALLOC_CONF: 'expandable_segments:True'
+  PYTORCH_CUDA_ALLOC_CONF: 'expandable_segments:True,max_non_split_rounding_mb:2048,graph_capture_record_stream_reuse:True,pinned_use_background_threads:True,pinned_use_cuda_host_register:True'
+  VLLM_MARLIN_USE_ATOMIC_ADD: "1"
   VLLM_ALLOW_LONG_MAX_MODEL_LEN: "1"
+  VLLM_FLASHINFER_DECODE_USE_TENSOR_CORES: "1"
   VLLM_SPARSE_INDEXER_MAX_LOGITS_MB: "256"
   VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS: "0"
-  B12X_W4A16_TC_DECODE: "0"
   DG_JIT_USE_NVRTC: "0"
   TILELANG_CLEANUP_TEMP_FILES: "1"
   TORCH_CUDA_ARCH_LIST: '12.1a'
