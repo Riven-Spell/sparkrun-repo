@@ -49,7 +49,6 @@ command: |
     --block-size {block_size} \
     --generation-config vllm \
     --enable-flashinfer-autotune \
-    --attention-backend B12X_MLA_SPARSE \
     -ep
 env:
   PYTORCH_CUDA_ALLOC_CONF: 'expandable_segments:True'
@@ -62,10 +61,8 @@ env:
   TORCH_CUDA_ARCH_LIST: '12.1a'
   FLASHINFER_CUDA_ARCH_LIST: '12.1a'
   VLLM_USE_V2_MODEL_RUNNER: '1'
-  VLLM_USE_B12X_MOE: '1'
-  VLLM_USE_B12X_SPARSE_INDEXER: '1'
 runtime: vllm
-mods: ['mods/vllm-pr-41834-dsv4-flash']
+mods: ['mods/vllm-pr-41834-dsv4-flash', ]
 runtime_config:
   build_args: [ '--vllm-ref', '3d99b0499aff7ce3b91942b0385558dab4eecf76', '--apply-flashinfer-pr', '3989' ]
 executor_config:
