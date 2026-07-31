@@ -63,7 +63,7 @@ env:
   FLASHINFER_CUDA_ARCH_LIST: '12.1a'
   VLLM_USE_V2_MODEL_RUNNER: '1'
 runtime: vllm
-mods: ['mods/vllm-pr-41834-dsv4-flash', ]
+mods: ['mods/vllm-pr-41834-dsv4-flash', 'mods/tonyd2wild/dspark-shared-expert-gate-up-proj']
 runtime_config:
   build_args: [ '--vllm-ref', '3d99b0499aff7ce3b91942b0385558dab4eecf76', '--apply-flashinfer-pr', '3989' ]
 executor_config:
