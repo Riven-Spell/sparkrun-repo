@@ -15,7 +15,7 @@ defaults:
   tool_call_parser: deepseek_v4
   pipeline_parallel: 1
   data_parallel: 1
-  max_cudagraph_capture_size: 8
+  max_cudagraph_capture_size: 72
   load_format: instanttensor
   kv_cache_dtype: fp8
   reasoning_parser: deepseek_v4
