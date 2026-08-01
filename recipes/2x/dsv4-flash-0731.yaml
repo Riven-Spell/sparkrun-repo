@@ -10,7 +10,7 @@ defaults:
   gpu_memory_utilization: 0.90
   max_model_len: 250000
   max_num_batched_tokens: 8192
-  max_num_seqs: 6
+  max_num_seqs: 8
   block_size: 256
   tool_call_parser: deepseek_v4
   pipeline_parallel: 1
@@ -20,7 +20,7 @@ defaults:
   kv_cache_dtype: fp8
   reasoning_parser: deepseek_v4
   tokenizer_mode: deepseek_v4
-  speculative_config: '{"method": "dspark", "num_speculative_tokens": 5}'
+  speculative_config: '{"method": "dspark", "num_speculative_tokens": 5, "draft_sample_method": "greedy"}'
   compilation_config: '{"cudagraph_mode":"FULL_AND_PIECEWISE","custom_ops":["all"]}'
   default_chat_template_kwargs: '{"enable_thinking": true, "preserve_thinking": true}'
 command: |
@@ -48,8 +48,7 @@ command: |
     --default-chat-template-kwargs '{default_chat_template_kwargs}' \
     --block-size {block_size} \
     --generation-config vllm \
-    --enable-flashinfer-autotune \
-    -ep
+    --enable-flashinfer-autotune
 env:
   PYTORCH_CUDA_ALLOC_CONF: 'expandable_segments:True,max_non_split_rounding_mb:2048,graph_capture_record_stream_reuse:True,pinned_use_background_threads:True,pinned_use_cuda_host_register:True'
   VLLM_MARLIN_USE_ATOMIC_ADD: "1"
@@ -63,6 +62,7 @@ env:
   FLASHINFER_CUDA_ARCH_LIST: '12.1a'
   VLLM_USE_V2_MODEL_RUNNER: '1'
   VLLM_USE_AOT_COMPILE: '1'
+  VLLM_USE_FASTOKENS: "1"
 runtime: vllm
 mods: ['mods/vllm-pr-41834-dsv4-flash', 'mods/tonyd2wild/dspark-shared-expert-gate-up-proj']
 runtime_config:
