@@ -7,7 +7,7 @@ defaults:
   port: 8000
   host: 0.0.0.0
   tensor_parallel: 2
-  gpu_memory_utilization: 0.90
+  gpu_memory_utilization: 0.85
   max_model_len: 250000
   max_num_batched_tokens: 16384
   max_num_seqs: 10
@@ -63,7 +63,7 @@ env:
   VLLM_USE_AOT_COMPILE: '1'
   VLLM_USE_FASTOKENS: "1"
 runtime: vllm
-mods: ['mods/vllm-pr-41834-dsv4-flash']
+mods: ['mods/vllm-pr-41834-dsv4-flash', 'fastokens']
 runtime_config:
   build_args: [ '--vllm-ref', '3d99b0499aff7ce3b91942b0385558dab4eecf76', '--apply-flashinfer-pr', '3989' ]
 executor_config:
