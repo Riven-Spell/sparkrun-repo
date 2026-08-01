@@ -2,7 +2,7 @@
 # Achieves ~40-50 tps; ~[30, 65] tps bounds
 
 model: fraserprice/DeepSeek-V4-Flash-Abliterated-DSpark
-container: vllm-dspark-runtime:dspark-nvfp4
+container: vllm-dspark-runtime-v0260:dspark-nvfp4
 defaults:
   port: 8000
   host: 0.0.0.0
@@ -65,7 +65,7 @@ env:
 runtime: vllm
 mods: ['mods/vllm-pr-41834-dsv4-flash', 'fastokens']
 runtime_config:
-  build_args: [ '--vllm-ref', '3d99b0499aff7ce3b91942b0385558dab4eecf76', '--apply-flashinfer-pr', '3989' ]
+  build_args: [ '--vllm-ref', 'v0.26.0', '--apply-flashinfer-pr', '3989' ]
 executor_config:
   ulimit:
     - memlock=-1:-1
