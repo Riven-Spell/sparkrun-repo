@@ -64,8 +64,6 @@ env:
   VLLM_USE_FASTOKENS: "1"
 runtime: vllm
 mods: ['mods/vllm-pr-41834-dsv4-flash', 'fastokens']
-runtime_config:
-  build_args: [ '--vllm-ref', 'v0.26.0', '--apply-flashinfer-pr', '3989' ]
 executor_config:
   ulimit:
     - memlock=-1:-1
