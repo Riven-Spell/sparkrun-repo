@@ -2,7 +2,7 @@
 # Achieves ~40-50 tps; ~[30, 65] tps bounds
 
 model: fraserprice/DeepSeek-V4-Flash-Abliterated-DSpark
-container: fraserpricee/vllm:dspark-cu132-20260627
+container: ghcr.io/anemll/dspark-vllm-gx10:0.1.1
 defaults:
   port: 8000
   host: 0.0.0.0
