@@ -17,7 +17,7 @@ defaults:
   data_parallel: 1
   max_cudagraph_capture_size: 8
   load_format: instanttensor
-  kv_cache_dtype: fp8
+  kv_cache_dtype: nvfp4_ds_mla
   reasoning_parser: deepseek_v4
   tokenizer_mode: deepseek_v4
   speculative_config: '{"method": "dspark", "num_speculative_tokens": 7, "draft_sample_method": "greedy"}'
@@ -63,7 +63,9 @@ env:
   VLLM_USE_AOT_COMPILE: '1'
   VLLM_USE_FASTOKENS: "1"
 runtime: vllm
-mods: ['mods/vllm-pr-41834-dsv4-flash', 'fastokens']
+# dsv4-nvfp4-kv-cache must come after vllm-pr-41834-dsv4-flash. It is dormant
+# unless kv_cache_dtype is set to nvfp4 (or nvfp4_ds_mla).
+mods: ['mods/vllm-pr-41834-dsv4-flash', 'fastokens', 'mods/tonyd2wild/dsv4-nvfp4-kv-cache']
 executor_config:
   ulimit:
     - memlock=-1:-1
