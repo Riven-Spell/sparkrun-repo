@@ -2,22 +2,22 @@
 # Achieves ~40-50 tps; ~[30, 65] tps bounds
 
 model: fraserprice/DeepSeek-V4-Flash-Abliterated-DSpark
-container: ghcr.io/anemll/dspark-vllm-gx10:0.1.1
+container: vllm-dspark-runtime-v0260:dspark-nvfp4
 defaults:
   port: 8000
   host: 0.0.0.0
   tensor_parallel: 2
   gpu_memory_utilization: 0.85
-  max_model_len: 250000
+  max_model_len: 200000
   max_num_batched_tokens: 16384
-  max_num_seqs: 10
+  max_num_seqs: 4
   block_size: 256
   tool_call_parser: deepseek_v4
   pipeline_parallel: 1
   data_parallel: 1
-  max_cudagraph_capture_size: 72
+  max_cudagraph_capture_size: 8
   load_format: instanttensor
-  kv_cache_dtype: nvfp4_ds_mla
+  kv_cache_dtype: fp8
   reasoning_parser: deepseek_v4
   tokenizer_mode: deepseek_v4
   speculative_config: '{"method": "dspark", "num_speculative_tokens": 7, "draft_sample_method": "greedy"}'
@@ -74,3 +74,7 @@ min_nodes: 2
 metadata:
   description: DeepSeek-V4-Flash
 recipe_version: '2'
+
+builder: eugr
+runtime_config:
+  build_args: [ '--vllm-ref', 'v0.26.0', '--apply-flashinfer-pr', '3989' ]
