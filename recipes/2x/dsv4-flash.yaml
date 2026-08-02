@@ -8,9 +8,9 @@ defaults:
   host: 0.0.0.0
   tensor_parallel: 2
   gpu_memory_utilization: 0.85
-  max_model_len: 200000
+  max_model_len: 250000
   max_num_batched_tokens: 16384
-  max_num_seqs: 4
+  max_num_seqs: 6
   block_size: 256
   tool_call_parser: deepseek_v4
   pipeline_parallel: 1
