@@ -220,6 +220,98 @@ REPLACEMENTS = [
         if kv_cache_dtype in ("fp8_ds_mla", "nvfp4_ds_mla"):
 ''',
     ),
+    # --- SWA / indexer / compressor caches: same envelope as an fp8 run ----
+    # These caches size/align off cache_config.cache_dtype; without these
+    # edits an nvfp4_ds_mla run silently gets 512-wide SWA pages while the
+    # SM120 packed path expects the 584B fp8_ds_mla layout.
+    (
+        "v1/attention/backends/mla/sparse_swa.py",
+        '        uses_fp8_ds_mla_layout = self.cache_config.cache_dtype == "fp8_ds_mla"\n',
+        "        uses_fp8_ds_mla_layout = self.cache_config.cache_dtype in (\n"
+        '            "fp8_ds_mla",\n'
+        '            "nvfp4_ds_mla",\n'
+        "        )\n",
+    ),
+    (
+        # DeepseekSparseSWABackend.get_kv_cache_shape: 584B/token SWA layout.
+        "v1/attention/backends/mla/sparse_swa.py",
+        '        if cache_dtype_str == "fp8_ds_mla":\n'
+        "            # DeepseekV4 SWA: 584B per token"
+        " (448 NoPE + 128 RoPE + 8 fp8 scale).",
+        '        if cache_dtype_str in ("fp8_ds_mla", "nvfp4_ds_mla"):\n'
+        "            # DeepseekV4 SWA: 584B per token"
+        " (448 NoPE + 128 RoPE + 8 fp8 scale).",
+    ),
+    (
+        # DeepseekV4IndexerCache.get_kv_cache_spec: keep 576B alignment.
+        "models/deepseek_v4/attention.py",
+        '        uses_fp8_ds_mla_layout = vllm_config.cache_config.cache_dtype == "fp8_ds_mla"\n',
+        "        uses_fp8_ds_mla_layout = vllm_config.cache_config.cache_dtype in (\n"
+        '            "fp8_ds_mla",\n'
+        '            "nvfp4_ds_mla",\n'
+        "        )\n",
+    ),
+    (
+        # Compressor state cache: keep 576B alignment.
+        "models/deepseek_v4/compressor.py",
+        '        uses_fp8_ds_mla_layout = vllm_config.cache_config.cache_dtype == "fp8_ds_mla"\n',
+        "        uses_fp8_ds_mla_layout = vllm_config.cache_config.cache_dtype in (\n"
+        '            "fp8_ds_mla",\n'
+        '            "nvfp4_ds_mla",\n'
+        "        )\n",
+    ),
+    # --- SM12x default path: FlashInfer DSV4 sparse backend ----------------
+    # On SM12, _select_dsv4_attn_cls defaults to DeepseekV4FlashInferSM120Attention
+    # (backend FLASHINFER_MLA_SPARSE_DSV4). Its gates must accept nvfp4_ds_mla
+    # or the backend is rejected / raises at init.
+    (
+        "models/deepseek_v4/nvidia/flashinfer_sparse.py",
+        '''    supported_kv_cache_dtypes: ClassVar[list[CacheDType]] = [
+        "auto",
+        "bfloat16",
+        "fp8",
+        "fp8_e4m3",
+        "fp8_ds_mla",
+    ]
+''',
+        '''    supported_kv_cache_dtypes: ClassVar[list[CacheDType]] = [
+        "auto",
+        "bfloat16",
+        "fp8",
+        "fp8_e4m3",
+        "fp8_ds_mla",
+        "nvfp4_ds_mla",
+    ]
+''',
+    ),
+    (
+        "models/deepseek_v4/nvidia/flashinfer_sparse.py",
+        '            if kv_cache_dtype not in ("fp8", "fp8_e4m3", "fp8_ds_mla"):\n'
+        '                return "kv_cache_dtype not supported"',
+        '            if kv_cache_dtype not in (\n'
+        '                "fp8",\n'
+        '                "fp8_e4m3",\n'
+        '                "fp8_ds_mla",\n'
+        '                "nvfp4_ds_mla",\n'
+        "            ):\n"
+        '                return "kv_cache_dtype not supported"',
+    ),
+    (
+        "v1/attention/backends/mla/flashinfer_mla_sparse_sm120.py",
+        '''        if self.kv_cache_dtype != "fp8_ds_mla":
+            raise NotImplementedError(
+                "FLASHINFER_MLA_SPARSE_SM120 requires the packed fp8_ds_mla "
+                f"KV cache layout; got kv_cache_dtype={kv_cache_dtype!r}."
+            )
+''',
+        '''        if self.kv_cache_dtype not in ("fp8_ds_mla", "nvfp4_ds_mla"):
+            raise NotImplementedError(
+                "FLASHINFER_MLA_SPARSE_SM120 requires the packed "
+                "fp8_ds_mla/nvfp4_ds_mla KV cache layout; got "
+                f"kv_cache_dtype={kv_cache_dtype!r}."
+            )
+''',
+    ),
 ]
 
 

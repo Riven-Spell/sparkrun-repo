@@ -29,7 +29,11 @@ files = (
     "v1/kv_cache_interface.py",
     "models/deepseek_v4/attention.py",
     "models/deepseek_v4/sparse_mla.py",
+    "models/deepseek_v4/compressor.py",
+    "models/deepseek_v4/nvidia/flashinfer_sparse.py",
     "v1/attention/backends/mla/flashmla_sparse.py",
+    "v1/attention/backends/mla/sparse_swa.py",
+    "v1/attention/backends/mla/flashinfer_mla_sparse_sm120.py",
 )
 for relative in files:
     py_compile.compile(str(root / relative), doraise=True)
@@ -54,5 +58,16 @@ assert 'cache_dtype_str in ("fp8_ds_mla", "nvfp4_ds_mla")' in smla
 fms = text("v1/attention/backends/mla/flashmla_sparse.py")
 assert '"nvfp4_ds_mla",' in fms
 assert 'kv_cache_dtype in ("fp8_ds_mla", "nvfp4_ds_mla")' in fms
+swa = text("v1/attention/backends/mla/sparse_swa.py")
+assert 'cache_dtype_str in ("fp8_ds_mla", "nvfp4_ds_mla")' in swa
+assert '"nvfp4_ds_mla",' in swa
+assert '"nvfp4_ds_mla",' in text("models/deepseek_v4/compressor.py")
+fis = text("models/deepseek_v4/nvidia/flashinfer_sparse.py")
+assert '"nvfp4_ds_mla",' in fis
+assert '"fp8_ds_mla",\n                "nvfp4_ds_mla",' in fis
+sm120 = text("v1/attention/backends/mla/flashinfer_mla_sparse_sm120.py")
+assert 'kv_cache_dtype not in ("fp8_ds_mla", "nvfp4_ds_mla")' in sm120
+# attention.py indexer-cache alignment must also treat nvfp4_ds_mla as ds_mla.
+assert att.count('cache_dtype in (\n            "fp8_ds_mla",\n            "nvfp4_ds_mla",\n        )') >= 1
 print("[dsv4-nvfp4-kv-cache] compile and marker checks passed")
 PY
