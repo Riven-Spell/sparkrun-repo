@@ -7,9 +7,9 @@ defaults:
   port: 8000
   host: 0.0.0.0
   tensor_parallel: 2
-  gpu_memory_utilization: 0.85
+  gpu_memory_utilization: 0.80
   max_model_len: 250000
-  max_num_batched_tokens: 16384
+  max_num_batched_tokens: 8192
   max_num_seqs: 6
   block_size: 256
   tool_call_parser: deepseek_v4
@@ -23,9 +23,10 @@ defaults:
   speculative_config: '{"method": "dspark", "num_speculative_tokens": 7, "draft_sample_method": "greedy"}'
   compilation_config: '{"cudagraph_mode":"FULL_AND_PIECEWISE","custom_ops":["all"]}'
   default_chat_template_kwargs: '{"enable_thinking": true, "preserve_thinking": true}'
+  served_model_name: 'deepseek-ai/Deepseek-V4-Flash'
 command: |
   vllm serve {model} \
-    --served-model-name 'deepseek-ai/DeepSeek-V4-Flash' \
+    --served-model-name '{served_model_name}' \
     --host {host} \
     --port {port} \
     --max-model-len {max_model_len} \
