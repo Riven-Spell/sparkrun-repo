@@ -2,7 +2,7 @@
 # Achieves ~40-50 tps; ~[30, 65] tps bounds
 
 model: lovesenko/DeepSeek-V4-Flash-0731-Abliterated
-container: vllm-dspark-runtime-v0260:dspark-nvfp4
+container: vllm-runtime-v0260:dspark-nvfp4-b12x
 defaults:
   port: 8000
   host: 0.0.0.0
@@ -20,9 +20,12 @@ defaults:
   kv_cache_dtype: nvfp4_ds_mla
   reasoning_parser: deepseek_v4
   tokenizer_mode: deepseek_v4
-  speculative_config: '{"method": "dspark", "num_speculative_tokens": 5, "draft_sample_method": "greedy"}'
+  speculative_config: '{"method": "dspark", "num_speculative_tokens": 5, "draft_sample_method": "greedy", "attention_backend": "B12X_MLA_SPARSE"}'
   compilation_config: '{"cudagraph_mode":"FULL_AND_PIECEWISE","custom_ops":["all"]}'
   default_chat_template_kwargs: '{"enable_thinking": true, "preserve_thinking": true}'
+  moe_backend: b12x
+  linear_backend: b12x
+  attention_backend: B12X_MLA_SPARSE
 command: |
   vllm serve {model} \
     --served-model-name 'deepseek-ai/DeepSeek-V4-Flash' \
@@ -48,7 +51,9 @@ command: |
     --default-chat-template-kwargs '{default_chat_template_kwargs}' \
     --block-size {block_size} \
     --generation-config vllm \
-    --enable-flashinfer-autotune
+    --moe-backend {moe_backend} \
+    --linear-backend {linear_backend} \
+    --attention-backend {attention_backend}
 env:
   PYTORCH_CUDA_ALLOC_CONF: 'expandable_segments:True,max_non_split_rounding_mb:2048,graph_capture_record_stream_reuse:True,pinned_use_background_threads:True,pinned_use_cuda_host_register:True'
   VLLM_MARLIN_USE_ATOMIC_ADD: "1"
@@ -63,6 +68,8 @@ env:
   VLLM_USE_V2_MODEL_RUNNER: '1'
   VLLM_USE_AOT_COMPILE: '1'
   VLLM_USE_FASTOKENS: "1"
+  VLLM_USE_B12X_SPARSE_INDEXER: "1"
+  VLLM_USE_V2_MODEL_RUNNER: "1"
 runtime: vllm
 # dsv4-nvfp4-kv-cache must come after vllm-pr-41834-dsv4-flash. It is dormant
 # unless kv_cache_dtype is set to nvfp4 (or nvfp4_ds_mla).
