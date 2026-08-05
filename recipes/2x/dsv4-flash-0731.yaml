@@ -26,9 +26,10 @@ defaults:
   moe_backend: b12x
   linear_backend: b12x
   attention_backend: B12X_MLA_SPARSE
+  served_model_name: 'deepseek-ai/DeepSeek-V4-Flash'
 command: |
   vllm serve {model} \
-    --served-model-name 'deepseek-ai/DeepSeek-V4-Flash' \
+    --served-model-name '{served_model_name}' \
     --host {host} \
     --port {port} \
     --max-model-len {max_model_len} \
