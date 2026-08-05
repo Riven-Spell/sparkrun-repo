@@ -23,7 +23,6 @@ command: |
     --max-cudagraph-capture-size {max_cudagraph_capture_size} \
     -ep \
     --gpu-memory-utilization {gpu_memory_utilization} \
-    --kv-cache-memory-bytes "5g" \
     -O3 \
     --attention-config.use_trtllm_attention=1
 defaults:
