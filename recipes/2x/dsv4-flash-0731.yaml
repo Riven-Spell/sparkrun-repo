@@ -64,16 +64,18 @@ env:
   VLLM_USE_AOT_COMPILE: '1'
   VLLM_USE_FASTOKENS: "1"
 runtime: vllm
-mods: ['mods/vllm-pr-41834-dsv4-flash', 'mods/tonyd2wild/dspark-shared-expert-gate-up-proj']
+# dsv4-nvfp4-kv-cache must come after vllm-pr-41834-dsv4-flash. It is dormant
+# unless kv_cache_dtype is set to nvfp4 (or nvfp4_ds_mla).
+mods: ['mods/vllm-pr-41834-dsv4-flash', 'fastokens', 'mods/tonyd2wild/dsv4-nvfp4-kv-cache']
+builder: eugr
 runtime_config:
-  build_args: [ '--vllm-ref', '3d99b0499aff7ce3b91942b0385558dab4eecf76', '--apply-flashinfer-pr', '3989' ]
+  build_args: [ '--vllm-ref', 'v0.26.0', '--apply-flashinfer-pr', '3989' ]
 executor_config:
   ulimit:
     - memlock=-1:-1
     - nofile=262144:262144
 ssh:
   user: clusteruser
-builder: eugr
 min_nodes: 2
 metadata:
   description: DeepSeek-V4-Flash
