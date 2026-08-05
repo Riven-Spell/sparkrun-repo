@@ -1,7 +1,7 @@
 # Heavily influenced by https://huggingface.co/drowzeys/DeepSeek-V4-Flash-DSpark-NVFP4-KV-1.5M-CTX-2xDGX-Spark
 # Achieves ~40-50 tps; ~[30, 65] tps bounds
 
-model: deepseek-ai/DeepSeek-V4-Flash-0731
+model: lovesenko/DeepSeek-V4-Flash-0731-Abliterated
 container: vllm-dspark-runtime:dspark-nvfp4
 defaults:
   port: 8000
