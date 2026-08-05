@@ -17,7 +17,7 @@ defaults:
   data_parallel: 1
   max_cudagraph_capture_size: 72
   load_format: instanttensor
-  kv_cache_dtype: fp8
+  kv_cache_dtype: nvfp4_ds_mla
   reasoning_parser: deepseek_v4
   tokenizer_mode: deepseek_v4
   speculative_config: '{"method": "dspark", "num_speculative_tokens": 5, "draft_sample_method": "greedy"}'
