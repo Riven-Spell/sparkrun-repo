@@ -2,7 +2,7 @@
 # Achieves ~40-50 tps; ~[30, 65] tps bounds
 
 model: lovesenko/DeepSeek-V4-Flash-0731-Abliterated
-container: vllm-dspark-runtime:dspark-nvfp4
+container: vllm-dspark-runtime-v0260:dspark-nvfp4
 defaults:
   port: 8000
   host: 0.0.0.0
