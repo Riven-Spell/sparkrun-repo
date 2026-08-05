@@ -21,7 +21,6 @@ command: |
     --kv-cache-dtype {kv_cache_dtype} \
     --block-size {block_size} \
     --max-cudagraph-capture-size {max_cudagraph_capture_size} \
-    -ep \
     --gpu-memory-utilization {gpu_memory_utilization} \
     -O3 \
     --attention-config.use_trtllm_attention=1
@@ -46,7 +45,7 @@ env:
   VLLM_MARLIN_USE_ATOMIC_ADD: "1"
   DG_JIT_USE_NVRTC: "0"
   TILELANG_CLEANUP_TEMP_FILES: "1"
-  VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS: "0"
+  VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS: "1"
   VLLM_SKIP_INIT_MEMORY_CHECK: "1"
   VLLM_USE_FASTOKENS: "1"
   VLLM_FLASHINFER_DECODE_USE_TENSOR_CORES: “1”
