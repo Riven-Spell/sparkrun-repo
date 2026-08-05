@@ -40,8 +40,6 @@ command: |
 runtime: vllm
 container: sparkrun-eugr-vllm-tf5
 recipe_version: '2'
-runtime_config:
-  build_args: [ '--apply-vllm-pr', '45544']
 defaults:
   host: 0.0.0.0
   tool_call_parser: gemma4
