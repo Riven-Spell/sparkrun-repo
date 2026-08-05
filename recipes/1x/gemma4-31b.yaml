@@ -38,7 +38,7 @@ command: |
     --block-size 512 \
     -O3
 runtime: vllm
-container: sparkrun-eugr-vllm-tf5
+container: ghcr.io/spark-arena/dgx-vllm-eugr-nightly
 recipe_version: '2'
 defaults:
   host: 0.0.0.0
