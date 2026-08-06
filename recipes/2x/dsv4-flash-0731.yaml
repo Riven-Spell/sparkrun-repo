@@ -7,7 +7,7 @@ defaults:
   port: 8000
   host: 0.0.0.0
   tensor_parallel: 2
-  gpu_memory_utilization: 0.85
+  gpu_memory_utilization: 0.89
   max_model_len: 250000
   max_num_batched_tokens: 8192
   max_num_seqs: 8
@@ -17,7 +17,7 @@ defaults:
   data_parallel: 1
   max_cudagraph_capture_size: 72
   load_format: instanttensor
-  kv_cache_dtype: nvfp4_ds_mla
+  kv_cache_dtype: fp8
   reasoning_parser: deepseek_v4
   tokenizer_mode: deepseek_v4
   speculative_config: '{"method": "dspark", "num_speculative_tokens": 5, "draft_sample_method": "greedy", "attention_backend": "B12X_MLA_SPARSE"}'
@@ -82,7 +82,7 @@ env:
 runtime: vllm
 # dsv4-nvfp4-kv-cache must come after vllm-pr-41834-dsv4-flash. It is dormant
 # unless kv_cache_dtype is set to nvfp4 (or nvfp4_ds_mla).
-mods: ['mods/vllm-pr-41834-dsv4-flash', 'fastokens', 'mods/tonyd2wild/dsv4-nvfp4-kv-cache']
+mods: ['mods/vllm-pr-41834-dsv4-flash', 'fastokens']
 builder: eugr
 runtime_config:
   build_args: [ '--vllm-ref', 'v0.26.0', '--apply-flashinfer-pr', '3989', '--exp-b12x' ]
