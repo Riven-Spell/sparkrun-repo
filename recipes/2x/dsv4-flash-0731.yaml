@@ -85,7 +85,7 @@ runtime: vllm
 mods: ['mods/vllm-pr-41834-dsv4-flash', 'fastokens', 'mods/tonyd2wild/dsv4-nvfp4-kv-cache']
 builder: eugr
 runtime_config:
-  build_args: [ '--vllm-ref', 'v0.26.0', '--apply-flashinfer-pr', '3989' ]
+  build_args: [ '--vllm-ref', 'v0.26.0', '--apply-flashinfer-pr', '3989', '--exp-b12x' ]
 executor_config:
   ulimit:
     - memlock=-1:-1
