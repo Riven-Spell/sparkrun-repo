@@ -1,5 +1,5 @@
 name: Ornith-1.0-397B
-container: ghcr.io/spark-arena/dgx-vllm-eugr-nightly:latest
+container: ghcr.io/spark-arena/dgx-vllm-eugr-nightly-b12x:latest
 solo_only: false
 cluster_only: false
 command: |
