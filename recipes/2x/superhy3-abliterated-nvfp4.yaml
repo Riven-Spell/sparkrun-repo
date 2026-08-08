@@ -18,7 +18,7 @@ defaults:
   port: 8000
   host: 0.0.0.0
   tensor_parallel: 2
-  gpu_memory_utilization: 0.90
+  gpu_memory_utilization: 0.91
   max_model_len: 250000
   max_num_batched_tokens: 8192
   max_num_seqs: 4
@@ -46,12 +46,16 @@ command: |
     --load-format {load_format} \
     --max-cudagraph-capture-size {max_cudagraph_capture_size} \
     --speculative-config '{speculative_config}' \
-    --enable-prefix-caching \
     --default-chat-template-kwargs '{default_chat_template_kwargs}' \
     --block-size {block_size} \
     --generation-config vllm \
     --attention-backend '{attn_backend}' \
-    -ep
+    --enable-flashinfer-autotune \ 
+    --enable-prefix-caching \
+    --enable-auto-tool-choice \
+    --trust-remote-code \
+    --tool-call-parser hy_v3 \
+    --reasoning-parser hy_v3
 
 env:
   INSTANTTENSOR_CHUNK_SIZE: "16777216"
