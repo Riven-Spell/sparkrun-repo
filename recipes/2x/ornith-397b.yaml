@@ -24,16 +24,16 @@ command: |
     --gpu-memory-utilization {gpu_memory_utilization} \
     -O3 \
     --attention-config.use_trtllm_attention=1 \
-    --limit-mm-per-prompt '{"image":8,"video":4}' \
+    --limit-mm-per-prompt '{"image":4,"video":4}' \
     -dcp {dcp}
 defaults:
   kv_cache_dtype: fp8
   attn_backend: FLASHINFER
   load_format: instanttensor
   tensor_parallel: 2
-  dcp: 2
+  dcp: 1
   max_model_len: 200000
-  max_num_seqs: 4
+  max_num_seqs: 2
   max_cudagraph_capture_size: 8
   port: 8000
   max_num_batched_tokens: 8192
