@@ -25,7 +25,8 @@ command: |
     -O3 \
     --attention-config.use_trtllm_attention=1 \
     --limit-mm-per-prompt '{"image":4,"video":4}' \
-    -dcp {dcp}
+    -dcp {dcp} \
+    --distributed-executor-backend ray
 defaults:
   kv_cache_dtype: fp8
   attn_backend: FLASHINFER
@@ -46,13 +47,26 @@ env:
   INSTANTTENSOR_CHUNK_SIZE: "16777216"
   INSTANTTENSOR_IO_DEPTH: 5
   PYTORCH_CUDA_ALLOC_CONF: 'expandable_segments:True,max_non_split_rounding_mb:2048,graph_capture_record_stream_reuse:True,pinned_use_background_threads:True,pinned_use_cuda_host_register:True'
+  VLLM_ALLOW_LONG_MAX_MODEL_LEN: "1"
+  VLLM_SPARSE_INDEXER_MAX_LOGITS_MB: "256"
   VLLM_MARLIN_USE_ATOMIC_ADD: "1"
   DG_JIT_USE_NVRTC: "0"
   TILELANG_CLEANUP_TEMP_FILES: "1"
   VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS: "1"
+  VLLM_MEMORY_PROFILE_INCLUDE_ATTN: "1"
   VLLM_SKIP_INIT_MEMORY_CHECK: "1"
   VLLM_USE_FASTOKENS: "1"
-  VLLM_FLASHINFER_DECODE_USE_TENSOR_CORES: “1”
+  VLLM_FLASHINFER_DECODE_USE_TENSOR_CORES: "1"
+  VLLM_USE_FLASHINFER_SAMPLER: "1"
+  VLLM_USE_V2_MODEL_RUNNER: '1'
+  VLLM_USE_AOT_COMPILE: '1'
+  TORCH_CUDA_ARCH_LIST: '12.1a'
+  FLASHINFER_CUDA_ARCH_LIST: '12.1a'
+
+executor_config:
+  ulimit:
+    - memlock=-1:-1
+    - nofile=262144:262144
 
 mods:
   - zenprocess-dflash-fix
