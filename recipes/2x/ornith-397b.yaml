@@ -67,7 +67,6 @@ executor_config:
     - nofile=262144:262144
 
 mods:
-  - zenprocess-dflash-fix
   - fastokens
 description: Ornith-1.0-397B
 model: fraserprice/Ornith-1.0-397B-W4A16-AutoRound-DFlash
