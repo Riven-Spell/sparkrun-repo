@@ -23,7 +23,8 @@ command: |
     --max-cudagraph-capture-size {max_cudagraph_capture_size} \
     --gpu-memory-utilization {gpu_memory_utilization} \
     -O3 \
-    --attention-config.use_trtllm_attention=1
+    --attention-config.use_trtllm_attention=1 \
+    --limit-mm-per-prompt '{"image":8,"video":4}'
 defaults:
   kv_cache_dtype: fp8
   attn_backend: FLASHINFER
