@@ -1,5 +1,10 @@
 name: Ornith-1.0-397B
-container: ghcr.io/spark-arena/dgx-vllm-eugr-nightly:latest
+container: ornith-vllm-runtime:0251
+builder: eugr
+
+runtime_config:
+  build_args: [ '--vllm-ref', 'v0.25.1' ]
+
 solo_only: false
 cluster_only: false
 command: |
@@ -23,12 +28,11 @@ command: |
     --max-cudagraph-capture-size {max_cudagraph_capture_size} \
     --gpu-memory-utilization {gpu_memory_utilization} \
     -O3 \
-    --limit-mm-per-prompt '{"image":4,"video":4}' \
-    -dcp {dcp}
+    --limit-mm-per-prompt '{"image":4,"video":4}'
 defaults:
   kv_cache_dtype: fp8
   attn_backend: FLASHINFER
-  load_format: instanttensor
+  load_format: auto
   tensor_parallel: 2
   dcp: 1
   max_model_len: 200000
