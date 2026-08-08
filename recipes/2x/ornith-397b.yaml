@@ -25,8 +25,7 @@ command: |
     -O3 \
     --attention-config.use_trtllm_attention=1 \
     --limit-mm-per-prompt '{"image":4,"video":4}' \
-    -dcp {dcp} \
-    --distributed-executor-backend ray
+    -dcp {dcp}
 defaults:
   kv_cache_dtype: fp8
   attn_backend: FLASHINFER
