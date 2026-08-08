@@ -1,5 +1,5 @@
 name: Ornith-1.0-397B
-container: ghcr.io/spark-arena/dgx-vllm-eugr-nightly-b12x:latest
+container: ghcr.io/spark-arena/dgx-vllm-eugr-nightly:latest
 solo_only: false
 cluster_only: false
 command: |
@@ -16,8 +16,6 @@ command: |
     --trust-remote-code \
     --load-format {load_format} \
     --attention-backend {attn_backend} \
-    --moe-backend {moe_backend} \
-    --linear-backend {linear_backend} \
     --enable-chunked-prefill \
     --enable-flashinfer-autotune \
     --kv-cache-dtype {kv_cache_dtype} \
@@ -28,9 +26,7 @@ command: |
     --attention-config.use_trtllm_attention=1
 defaults:
   kv_cache_dtype: fp8
-  attn_backend: B12X_MLA_SPARSE
-  moe_backend: b12x
-  linear_backend: b12x
+  attn_backend: FLASHINFER
   load_format: instanttensor
   tensor_parallel: 2
   max_model_len: 200000
@@ -42,7 +38,7 @@ defaults:
   host: 0.0.0.0
   # at 105GB per box, we're already bare minimum scraping 82%. This is a tight fit!
   gpu_memory_utilization: 0.91
-  speculative_config: '{"method": "dflash", "num_speculative_tokens": 8, "model": "z-lab/Qwen3.5-397B-A17B-DFlash", "attention_backend": "B12X_MLA_SPARSE"}'
+  speculative_config: '{"method": "dflash", "num_speculative_tokens": 8, "model": "z-lab/Qwen3.5-397B-A17B-DFlash"}'
 env:
   INSTANTTENSOR_CHUNK_SIZE: "16777216"
   INSTANTTENSOR_IO_DEPTH: 5
