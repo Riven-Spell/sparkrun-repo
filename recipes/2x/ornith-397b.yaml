@@ -23,18 +23,20 @@ command: |
     --attention-backend {attn_backend} \
     --enable-chunked-prefill \
     --enable-flashinfer-autotune \
+    --async-scheduling \
     --kv-cache-dtype {kv_cache_dtype} \
     --block-size {block_size} \
     --max-cudagraph-capture-size {max_cudagraph_capture_size} \
     --gpu-memory-utilization {gpu_memory_utilization} \
     -O3 \
+    -dcp {dcp} \
     --limit-mm-per-prompt '{"image":4,"video":4}'
 defaults:
   kv_cache_dtype: fp8
   attn_backend: FLASHINFER
-  load_format: auto
+  load_format: instanttensor
   tensor_parallel: 2
-  dcp: 1
+  dcp: 2
   max_model_len: 200000
   max_num_seqs: 2
   max_cudagraph_capture_size: 8
