@@ -29,16 +29,14 @@ command: |
     --max-cudagraph-capture-size {max_cudagraph_capture_size} \
     --gpu-memory-utilization {gpu_memory_utilization} \
     -O3 \
-    -dcp {dcp} \
     --limit-mm-per-prompt '{"image":4,"video":4}'
 defaults:
   kv_cache_dtype: fp8
   attn_backend: FLASHINFER
   load_format: instanttensor
   tensor_parallel: 2
-  dcp: 2
   max_model_len: 200000
-  max_num_seqs: 2
+  max_num_seqs: 1
   max_cudagraph_capture_size: 8
   port: 8000
   max_num_batched_tokens: 8192
@@ -75,5 +73,5 @@ executor_config:
 mods:
   - fastokens
 description: Ornith-1.0-397B
-model: fraserprice/Ornith-1.0-397B-W4A16-AutoRound-DFlash
+model: cebeuq/Ornith-1.0-397B-abliterated-W4A16
 recipe_version: '2'
