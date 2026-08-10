@@ -7,7 +7,7 @@
 # Model details: https://huggingface.co/Jiunsong/SuperHY3-abliterated-NVFP4
 
 model: Jiunsong/SuperHY3-abliterated-NVFP4
-container: ghcr.io/spark-arena/dgx-vllm-eugr-nightly:latest
+container: ghcr.io/spark-arena/dgx-vllm-eugr-nightly:20260810
 min_nodes: 2
 recipe_version: '2'
 

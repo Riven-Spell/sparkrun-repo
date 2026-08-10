@@ -1,5 +1,5 @@
 name: Ornith-1.0-397B
-container: ghcr.io/spark-arena/dgx-vllm-eugr-nightly:latest
+container: ghcr.io/spark-arena/dgx-vllm-eugr-nightly:20260810
 
 solo_only: false
 cluster_only: false
@@ -22,9 +22,10 @@ command: |
     --async-scheduling \
     --kv-cache-dtype {kv_cache_dtype} \
     --block-size {block_size} \
-    --kv-cache-memory=3030248244 \
+    --gpu-memory-utilization {gpu_memory_utilization} \
     -O3 \
-    --limit-mm-per-prompt '{"image":4,"video":4}'
+    --limit-mm-per-prompt '{"image":4,"video":4}' \
+    --speculative_config '{speculative_config}'
 defaults:
   kv_cache_dtype: fp8
   attn_backend: FLASHINFER
@@ -42,11 +43,11 @@ defaults:
 env:
   INSTANTTENSOR_CHUNK_SIZE: "16777216"
   INSTANTTENSOR_IO_DEPTH: 5
-  PYTORCH_CUDA_ALLOC_CONF: 'expandable_segments:True,max_non_split_rounding_mb:2048,graph_capture_record_stream_reuse:True,pinned_use_background_threads:True,pinned_use_cuda_host_register:True'
+  PYTORCH_CUDA_ALLOC_CONF: 'expandable_segments:True,max_non_split_rounding_mb:1024,graph_capture_record_stream_reuse:True,pinned_use_background_threads:True,pinned_use_cuda_host_register:True'
   VLLM_ALLOW_LONG_MAX_MODEL_LEN: "1"
   VLLM_SPARSE_INDEXER_MAX_LOGITS_MB: "256"
   VLLM_MARLIN_USE_ATOMIC_ADD: "1"
-  DG_JIT_USE_NVRTC: "0"
+  DG_JIT_USE_NVRTC: "1"
   TILELANG_CLEANUP_TEMP_FILES: "1"
   VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS: "1"
   VLLM_MEMORY_PROFILE_INCLUDE_ATTN: "1"
