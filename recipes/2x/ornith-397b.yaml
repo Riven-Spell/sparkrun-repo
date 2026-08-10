@@ -1,9 +1,5 @@
 name: Ornith-1.0-397B
-container: ornith-vllm-runtime:0251
-builder: eugr
-
-runtime_config:
-  build_args: [ '--vllm-ref', 'v0.25.1' ]
+container: ghcr.io/spark-arena/dgx-vllm-eugr-nightly:latest
 
 solo_only: false
 cluster_only: false
