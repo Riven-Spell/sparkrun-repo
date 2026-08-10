@@ -22,7 +22,7 @@ command: |
     --async-scheduling \
     --kv-cache-dtype {kv_cache_dtype} \
     --block-size {block_size} \
-    --gpu-memory-utilization {gpu_memory_utilization} \
+    --kv-cache-memory=3030248244 \
     -O3 \
     --limit-mm-per-prompt '{"image":4,"video":4}'
 defaults:
