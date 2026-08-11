@@ -1,0 +1,202 @@
+diff --git a/tests/v1/core/test_kv_cache_utils.py b/tests/v1/core/test_kv_cache_utils.py
+index 33430ce85..e5a385b3a 100644
+--- a/tests/v1/core/test_kv_cache_utils.py
++++ b/tests/v1/core/test_kv_cache_utils.py
+@@ -6,12 +6,13 @@ import importlib
+ from collections.abc import Callable
+ from types import SimpleNamespace
+ from typing import Any
++from unittest.mock import patch
+ 
+ import pytest
+ import torch
+ 
+ import vllm.v1.core.kv_cache_utils as kv_cache_utils
+-from vllm.config import ModelConfig, SchedulerConfig, VllmConfig
++from vllm.config import CacheConfig, ModelConfig, SchedulerConfig, VllmConfig
+ from vllm.config.kv_events import KVEventsConfig
+ from vllm.lora.request import LoRARequest
+ from vllm.multimodal.inputs import (
+@@ -22,11 +23,13 @@ from vllm.multimodal.inputs import (
+ from vllm.sampling_params import SamplingParams
+ from vllm.utils.hashing import sha256, sha256_cbor
+ from vllm.utils.mem_constants import GiB_bytes
++from vllm.utils.mem_utils import MemorySnapshot
+ from vllm.v1.core.kv_cache_manager import KVCacheManager
+ from vllm.v1.core.kv_cache_utils import (
+     BlockHash,
+     FreeKVCacheBlockQueue,
+     KVCacheBlock,
++    check_enough_kv_cache_memory,
+     estimate_max_model_len,
+     generate_block_hash_extra_keys,
+     generate_scheduler_kv_cache_config,
+@@ -63,6 +66,7 @@ from vllm.v1.kv_cache_interface import (
+ )
+ from vllm.v1.metrics.stats import CachingMetrics, PrefixCacheStats
+ from vllm.v1.request import Request
++from vllm.v1.worker.utils import request_memory
+ 
+ pytestmark = pytest.mark.cpu_test
+ 
+@@ -3034,3 +3038,43 @@ def test_resolve_block_hashes_rejects_mismatched_view():
+     mismatched = BlockHashListWithBlockSize(raw, 2, 8)
+     with pytest.raises(AssertionError):
+         resolve_block_hashes(mismatched, 2, 4)
++
++
++def test_request_memory_bypasses_strict_memory_check():
++    """VLLM_STRICT_MEMORY_CHECK=0 must downgrade the gpu_memory_utilization
++    startup check to a warning instead of raising."""
++    cache_config = CacheConfig(gpu_memory_utilization=0.9)
++    snapshot = MemorySnapshot(
++        free_memory=80,
++        total_memory=100,
++        device=None,
++        auto_measure=False,
++    )
++    # free (80) < requested (ceil(0.9 * 100) = 90).
++    with pytest.raises(ValueError, match="less than desired"):
++        request_memory(snapshot, cache_config)
++
++    with patch("vllm.v1.worker.utils.envs.VLLM_STRICT_MEMORY_CHECK", False):
++        requested = request_memory(snapshot, cache_config)
++    assert requested == 90
++
++
++def test_check_enough_kv_cache_memory_bypasses_strict_memory_check():
++    """VLLM_STRICT_MEMORY_CHECK=0 must downgrade the KV cache admission check
++    to a warning instead of raising when the pre-allocated buffer is too
++    small."""
++    model_config = ModelConfig(max_model_len=16384)
++    vllm_config = VllmConfig(model_config=model_config)
++    mem_per_block_per_layer = 16 * 2 * 64 * 4 * 2
++    kv_cache_spec = {
++        "layer_1": new_kv_cache_spec(),
++        "layer_2": new_kv_cache_spec(),
++    }
++    # Only 8 blocks available, far fewer than max_model_len=16384 needs.
++    small_available = mem_per_block_per_layer * 2 * 8
++
++    with pytest.raises(ValueError, match="max seq len"):
++        check_enough_kv_cache_memory(vllm_config, kv_cache_spec, small_available)
++
++    with patch("vllm.v1.core.kv_cache_utils.envs.VLLM_STRICT_MEMORY_CHECK", False):
++        check_enough_kv_cache_memory(vllm_config, kv_cache_spec, small_available)
+diff --git a/vllm/envs.py b/vllm/envs.py
+index 1b941db97..4780b93ed 100755
+--- a/vllm/envs.py
++++ b/vllm/envs.py
+@@ -295,6 +295,12 @@ if TYPE_CHECKING:
+     """If set, vLLM will skip model name validation in API requests.
+     This allows any model name to be accepted in the 'model' field of requests,
+     making the server model-name agnostic. Useful for proxy/gateway scenarios."""
++    VLLM_STRICT_MEMORY_CHECK: bool = True
++    """If set to 0, vLLM will skip the startup memory checks that verify the
++    requested `--gpu-memory-utilization` fits in the available GPU memory and
++    that the KV cache fits in the pre-allocated buffer. Useful when the
++    available memory reported at startup is unreliable, e.g. with other
++    processes sharing the GPU."""
+     VLLM_ELASTIC_EP_SCALE_UP_LAUNCH: bool = False
+     VLLM_ELASTIC_EP_DRAIN_REQUESTS: bool = False
+     VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS: bool = True
+@@ -1168,6 +1174,10 @@ environment_variables: dict[str, Callable[[], Any]] = {
+     # so that vLLM can verify if p2p is actually working.
+     # See https://github.com/vllm-project/vllm/blob/a9b15c606fea67a072416ea0ea115261a2756058/vllm/distributed/device_communicators/custom_all_reduce_utils.py#L101-L108 for details. # noqa
+     "VLLM_SKIP_P2P_CHECK": lambda: os.getenv("VLLM_SKIP_P2P_CHECK", "1") == "1",
++    "VLLM_STRICT_MEMORY_CHECK": lambda: os.getenv(
++        "VLLM_STRICT_MEMORY_CHECK", "1"
++    )
++    == "1",
+     # List of quantization kernels that should be disabled, used for testing
+     # and performance comparisons. Currently only affects MPLinearKernel
+     # selection
+@@ -2246,6 +2256,8 @@ def compile_factors() -> dict[str, object]:
+         "VLLM_ENABLE_CUDA_COMPATIBILITY",
+         "VLLM_CUDA_COMPATIBILITY_PATH",
+         "VLLM_SKIP_MODEL_NAME_VALIDATION",
++        # Runtime memory-check override; does not affect compiled graphs.
++        "VLLM_STRICT_MEMORY_CHECK",
+         "LOCAL_RANK",
+         "CUDA_VISIBLE_DEVICES",
+         "NO_COLOR",
+diff --git a/vllm/v1/core/kv_cache_utils.py b/vllm/v1/core/kv_cache_utils.py
+index 770dffa4f..469b3a1a1 100644
+--- a/vllm/v1/core/kv_cache_utils.py
++++ b/vllm/v1/core/kv_cache_utils.py
+@@ -735,7 +735,7 @@ def _check_enough_kv_cache_memory(
+     estimate_max_model_len: Callable[[int], int],
+ ):
+     if available_memory <= 0:
+-        raise ValueError(
++        msg = (
+             "No available memory for the cache blocks. "
+             "Try increasing `gpu_memory_utilization` when initializing the engine "
+             "(this flag also controls CPU memory reservation on the CPU "
+@@ -743,6 +743,11 @@ def _check_enough_kv_cache_memory(
+             "See https://docs.vllm.ai/en/latest/configuration/conserving_memory/ "
+             "for more details."
+         )
++        if envs.VLLM_STRICT_MEMORY_CHECK:
++            raise ValueError(msg)
++        logger.warning(
++            "%s Bypassing memory check since VLLM_STRICT_MEMORY_CHECK=0.", msg
++        )
+ 
+     needed_memory = get_needed_memory()
+ 
+@@ -755,7 +760,7 @@ def _check_enough_kv_cache_memory(
+                 f"the estimated maximum model length is {estimated_max_len}. "
+             )
+ 
+-        raise ValueError(
++        msg = (
+             f"To serve at least one request with the model's max seq len "
+             f"({max_model_len}), ({format_gib(needed_memory)} GiB KV "
+             f"cache is needed, which is larger than the available KV cache "
+@@ -766,6 +771,11 @@ def _check_enough_kv_cache_memory(
+             f"See https://docs.vllm.ai/en/latest/configuration/conserving_memory/ "
+             f"for more details."
+         )
++        if envs.VLLM_STRICT_MEMORY_CHECK:
++            raise ValueError(msg)
++        logger.warning(
++            "%s Bypassing memory check since VLLM_STRICT_MEMORY_CHECK=0.", msg
++        )
+ 
+ 
+ def max_memory_usage_bytes(
+diff --git a/vllm/v1/worker/utils.py b/vllm/v1/worker/utils.py
+index 55f93860a..81b3b1114 100644
+--- a/vllm/v1/worker/utils.py
++++ b/vllm/v1/worker/utils.py
+@@ -10,6 +10,7 @@ from typing import Any
+ import numpy as np
+ import torch
+ 
++from vllm import envs
+ from vllm.config import CacheConfig, VllmConfig
+ from vllm.logger import init_logger
+ from vllm.model_executor.layers.attention import Attention
+@@ -464,7 +465,7 @@ def request_memory(init_snapshot: MemorySnapshot, cache_config: CacheConfig) ->
+     )
+ 
+     if init_snapshot.free_memory < requested_memory:
+-        raise ValueError(
++        msg = (
+             f"Free memory on device {init_snapshot.device_} "
+             f"({format_gib(init_snapshot.free_memory)}/"
+             f"{format_gib(init_snapshot.total_memory)} GiB) on startup "
+@@ -473,6 +474,12 @@ def request_memory(init_snapshot: MemorySnapshot, cache_config: CacheConfig) ->
+             f"{format_gib(requested_memory)} GiB). Decrease GPU memory "
+             f"utilization or reduce GPU memory used by other processes."
+         )
++        if envs.VLLM_STRICT_MEMORY_CHECK:
++            raise ValueError(msg)
++        logger.warning(
++            "%s Bypassing memory check since VLLM_STRICT_MEMORY_CHECK=0.",
++            msg,
++        )
+ 
+     return requested_memory
+ 

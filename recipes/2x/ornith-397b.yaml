@@ -24,6 +24,7 @@ command: |
     --block-size {block_size} \
     --gpu-memory-utilization {gpu_memory_utilization} \
     -O3 \
+    --speculative_config '{speculative_config}' \
     --limit-mm-per-prompt '{"image":4,"video":4}' \
     -dcp {dcp}
 defaults:
@@ -40,6 +41,7 @@ defaults:
   host: 0.0.0.0
   # at 105GB per box, we're already bare minimum scraping 82%. This is a tight fit!
   gpu_memory_utilization: 0.90
+  speculative_config: '{"method": "dflash", "num_speculative_tokens": 8, "model": "z-lab/Qwen3.5-397B-A17B-DFlash"}'
 env:
   INSTANTTENSOR_CHUNK_SIZE: "16777216"
   INSTANTTENSOR_IO_DEPTH: 5
@@ -59,6 +61,7 @@ env:
   VLLM_USE_AOT_COMPILE: '1'
   TORCH_CUDA_ARCH_LIST: '12.1a'
   FLASHINFER_CUDA_ARCH_LIST: '12.1a'
+  VLLM_STRICT_MEMORY_CHECK: '0'
 
 executor_config:
   ulimit:
@@ -67,6 +70,8 @@ executor_config:
 
 mods:
   - fastokens
+  - vllm-skip-memory-check
+
 description: Ornith-1.0-397B
 model: cebeuq/Ornith-1.0-397B-abliterated-W4A16
 recipe_version: '2'
