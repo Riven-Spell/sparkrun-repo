@@ -1,3 +1,6 @@
+# Note: This recipe is liable to hit swap. You are recommended to configure zram in place of swap, both for speed and preserving SSD lifespan.
+# Author's config is 0.25*RAM of zram "space". Launch will likely fail without this.
+
 name: Ornith-1.0-397B
 container: ghcr.io/spark-arena/dgx-vllm-eugr-nightly:20260810
 
@@ -40,7 +43,7 @@ defaults:
   block_size: 256
   host: 0.0.0.0
   # at 105GB per box, we're already bare minimum scraping 82%. This is a tight fit!
-  gpu_memory_utilization: 0.92
+  gpu_memory_utilization: 0.91
   speculative_config: '{"method": "dflash", "num_speculative_tokens": 2, "model": "z-lab/Qwen3.5-397B-A17B-DFlash"}'
 env:
   INSTANTTENSOR_CHUNK_SIZE: "16777216"
