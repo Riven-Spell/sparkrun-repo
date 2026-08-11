@@ -40,8 +40,8 @@ defaults:
   block_size: 256
   host: 0.0.0.0
   # at 105GB per box, we're already bare minimum scraping 82%. This is a tight fit!
-  gpu_memory_utilization: 0.90
-  speculative_config: '{"method": "dflash", "num_speculative_tokens": 8, "model": "z-lab/Qwen3.5-397B-A17B-DFlash"}'
+  gpu_memory_utilization: 0.92
+  speculative_config: '{"method": "dflash", "num_speculative_tokens": 2, "model": "z-lab/Qwen3.5-397B-A17B-DFlash"}'
 env:
   INSTANTTENSOR_CHUNK_SIZE: "16777216"
   INSTANTTENSOR_IO_DEPTH: 5
