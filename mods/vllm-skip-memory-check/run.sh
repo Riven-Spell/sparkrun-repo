@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-PATCHFILE="${PWD}/diff.patch"
+PATCHFILE="${PWD}/memcheck.diff"
 
 cd /usr/local/lib/python3.12/dist-packages
 echo "Applying VLLM memory check skip patch"
