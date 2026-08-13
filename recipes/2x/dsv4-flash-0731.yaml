@@ -79,10 +79,11 @@ env:
   VLLM_USE_B12X_SPARSE_INDEXER: "1"
   B12X_MLA_SM120_UNIFIED: "1"
   B12X_MOE_FORCE_A8: "1"
+  VLLM_STRICT_MEMORY_CHECK: "0"
 runtime: vllm
 # dsv4-nvfp4-kv-cache must come after vllm-pr-41834-dsv4-flash. It is dormant
 # unless kv_cache_dtype is set to nvfp4 (or nvfp4_ds_mla).
-mods: ['mods/vllm-pr-41834-dsv4-flash', 'fastokens']
+mods: ['mods/vllm-pr-41834-dsv4-flash', 'fastokens', 'vllm-skip-memory-check']
 builder: eugr
 runtime_config:
   build_args: [ '--vllm-ref', 'v0.26.0', '--apply-flashinfer-pr', '3989', '--exp-b12x' ]
