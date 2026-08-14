@@ -47,8 +47,8 @@ defaults:
   pipeline_parallel: 1
   load_format: instanttensor
   reasoning_parser: gemma4
-  kv_cache_dtype: auto
-  gpu_memory_utilization: 0.8
+  kv_cache_dtype: fp8
+  gpu_memory_utilization: 0.9
   tensor_parallel: 1
   max_num_batched_tokens: 32768
   max_model_len: 262144
