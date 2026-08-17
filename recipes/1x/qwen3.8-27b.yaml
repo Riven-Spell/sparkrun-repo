@@ -22,7 +22,7 @@ defaults:
   max_num_batched_tokens: 32768
   tensor_parallel: 1
   chat_template_args: '{"enable_thinking": true}'
-  speculative_config: '{"method": "mtp", "num_speculative_tokens": 3}'
+  speculative_config: '{"method": "dspark", "model": "Doopeworld/Qwen3.8-27B-DSpark-vLLM", "num_speculative_tokens": 7}'
   compilation_config: '{"cudagraph_mode":"FULL_AND_PIECEWISE","custom_ops":["all"]}'
 
 command: |
