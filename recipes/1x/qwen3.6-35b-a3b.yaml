@@ -1,4 +1,4 @@
-name: Ornith-1.0-35B
+name: Qwen 3.6 35B A3B
 solo_only: false
 cluster_only: false
 command: |
