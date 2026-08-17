@@ -46,7 +46,8 @@ command: |
     --enable-auto-tool-choice \
     --trust-remote-code \
     --enable-chunked-prefill \
-    --enable-flashinfer-autotune
+    --enable-flashinfer-autotune \
+    --async-scheduling
 
 env:
   PYTORCH_CUDA_ALLOC_CONF: 'expandable_segments:True,max_non_split_rounding_mb:2048,graph_capture_record_stream_reuse:True,pinned_use_background_threads:True,pinned_use_cuda_host_register:True'
