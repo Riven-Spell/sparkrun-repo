@@ -1,0 +1,58 @@
+name: Qwen 3.8 27B
+description: Qwen 3.8 27B abliterated
+recipe_version: '2'
+container: ghcr.io/spark-arena/dgx-vllm-eugr-nightly:20260815
+solo_only: false
+cluster_only: false
+
+model: orcarouter/Qwen3.8-27B-Uncensored-FP8
+
+defaults:
+  served_model_name: "Qwen/Qwen3.8-27B"
+  host: 0.0.0.0
+  port: 8000
+  load_format: instanttensor
+  attn_backend: FLASHINFER
+  reasoning_parser: qwen3
+  tool_call_parser: qwen3_coder
+  gpu_memory_utilization: 0.80
+  kv_cache_dtype: fp8
+  max_model_len: 262144
+  max_num_seqs: 10
+  max_num_batched_tokens: 32768
+  tensor_parallel: 1
+  chat_template_args: '{"enable_thinking": true}'
+  speculative_config: '{"method": "dspark", "model": "Doopeworld/Qwen3.8-27B-DSpark-vLLM", "num_speculative_tokens": 7}'
+  compilation_config: '{"cudagraph_mode":"FULL_AND_PIECEWISE","custom_ops":["all"]}'
+
+command: |
+  vllm serve {model} \
+    --served-model-name {served_model_name} \
+    --host {host} --port {port} \
+    --load-format {load_format} \
+    --attention-backend {attn_backend} \
+    --reasoning-parser {reasoning_parser} \
+    --tool-call-parser {tool_call_parser} \
+    --gpu-memory-utilization {gpu_memory_utilization} \
+    --kv-cache-dtype {kv_cache_dtype} \
+    --max-model-len {max_model_len} \
+    --max-num-seqs {max_num_seqs} \
+    --max-num-batched-tokens {max_num_batched_tokens} \
+    --tensor-parallel-size {tensor_parallel} \
+    --default-chat-template-kwargs '{chat_template_args}' \
+    --speculative-config '{speculative_config}' \
+    --compilation-config '{compilation_config}' \
+    --enable-prefix-caching \
+    --enable-auto-tool-choice \
+    --trust-remote-code \
+    --enable-chunked-prefill \
+    --enable-flashinfer-autotune \
+    --async-scheduling
+
+env:
+  PYTORCH_CUDA_ALLOC_CONF: 'expandable_segments:True,max_non_split_rounding_mb:2048,graph_capture_record_stream_reuse:True,pinned_use_background_threads:True,pinned_use_cuda_host_register:True'
+  VLLM_MARLIN_USE_ATOMIC_ADD: "1"
+  VLLM_USE_FASTOKENS: "1"
+
+mods:
+  - fastokens
