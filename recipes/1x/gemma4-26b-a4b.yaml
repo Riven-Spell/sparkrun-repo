@@ -8,7 +8,7 @@ metadata:
   num_kv_heads: 8
   head_dim: 256
   model_params: '34372770104'
-model: unsloth/gemma-4-26B-A4B-it-NVFP4
+model: orcarouter/Gemma-4-26B-A4B-it-Uncensored-FP8
 command: |
   vllm serve {model} \
     --served-model-name "google/gemma-4-26B-A4B-it" \
@@ -57,7 +57,7 @@ defaults:
   max_num_seqs: 10
   max_cudagraph_capture_size: 8
   block_size: 256
-  attn_backend: TRITON_ATTN
+  attn_backend: FLASHINFER
   chat_template_args: '{"enable_thinking": true}'
   speculative_config: '{"method": "dspark", "num_speculative_tokens": 6, "model": "makora-ai/gemma4-26b-a4b-dspark"}'
   compilation_config: '{"cudagraph_mode":"FULL_AND_PIECEWISE","custom_ops":["all"]}'

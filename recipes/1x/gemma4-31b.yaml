@@ -8,7 +8,7 @@ metadata:
   num_kv_heads: 8
   head_dim: 256
   model_params: '34372770104'
-model: ebircak/gemma-4-31B-it-4bit-NVFP4A16-GPTQ
+model: kakrotto/gemma-4-31B-it-uncensored-heretic-FP8
 command: |
   vllm serve {model} \
     --served-model-name "google/gemma-4-31B" \
@@ -33,6 +33,7 @@ command: |
     --chat-template chat_template.jinja \
     --trust-remote-code \
     --speculative-config '{speculative_config}' \
+    --compilation-config '{compilation_config}' \
     --async-scheduling \
     --enable-chunked-prefill \
     --block-size 512 \
@@ -48,15 +49,18 @@ defaults:
   load_format: instanttensor
   reasoning_parser: gemma4
   kv_cache_dtype: fp8
-  gpu_memory_utilization: 0.9
+  gpu_memory_utilization: 0.8
   tensor_parallel: 1
   max_num_batched_tokens: 32768
   max_model_len: 262144
   max_num_seqs: 10
   attn_backend: TRITON_ATTN
   chat_template_args: '{"enable_thinking": true}'
-  speculative_config: '{"method": "dflash", "model":"RedHatAI/gemma-4-31B-it-speculator.dflash", "num_speculative_tokens": 5}'
+  speculative_config: '{"method": "dspark", "model":"RedHatAI/gemma-4-31B-it-speculator.dspark", "num_speculative_tokens": 7}'
+  compilation_config: '{"cudagraph_mode":"FULL_AND_PIECEWISE","custom_ops":["all"]}'
 env:
   VLLM_MARLIN_USE_ATOMIC_ADD: '1'
+  VLLM_USE_FASTOKENS: '1'
 mods:
   - mods/gemma4-jinja
+  - fastokens
