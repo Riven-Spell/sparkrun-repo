@@ -1,0 +1,78 @@
+# Note: This recipe is liable to hit swap. You are recommended to configure zram in place of swap, both for speed and preserving SSD lifespan.
+# Author's config is 0.25*RAM of zram "space". Launch will likely fail without this.
+
+name: Ornith-1.0-397B
+container: ghcr.io/spark-arena/dgx-vllm-eugr-nightly:20260810
+
+solo_only: false
+cluster_only: false
+command: |
+  vllm serve {model} \
+    --served-model-name deepreinforce-ai/Ornith-1.0-397B \
+    --tensor-parallel-size {tensor_parallel} \
+    --host {host} --port {port} \
+    --max-model-len {max_model_len} \
+    --max-num-seqs {max_num_seqs} \
+    --max-num-batched-tokens {max_num_batched_tokens} \
+    --enable-prefix-caching \
+    --enable-auto-tool-choice --tool-call-parser qwen3_xml \
+    --reasoning-parser qwen3 \
+    --trust-remote-code \
+    --load-format {load_format} \
+    --attention-backend {attn_backend} \
+    --enable-chunked-prefill \
+    --enable-flashinfer-autotune \
+    --async-scheduling \
+    --kv-cache-dtype {kv_cache_dtype} \
+    --block-size {block_size} \
+    --gpu-memory-utilization {gpu_memory_utilization} \
+    -O3 \
+    --limit-mm-per-prompt '{"image":4,"video":4}' \
+    -dcp {dcp}
+defaults:
+  kv_cache_dtype: fp8
+  attn_backend: FLASHINFER
+  load_format: instanttensor
+  tensor_parallel: 4
+  dcp: 1
+  max_model_len: 200000
+  max_num_seqs: 4
+  port: 8000
+  max_num_batched_tokens: 8192
+  block_size: 256
+  host: 0.0.0.0
+  # at 105GB per box, we're already bare minimum scraping 82%. This is a tight fit!
+  gpu_memory_utilization: 0.91
+env:
+  INSTANTTENSOR_CHUNK_SIZE: "16777216"
+  INSTANTTENSOR_IO_DEPTH: 5
+  PYTORCH_CUDA_ALLOC_CONF: 'expandable_segments:True,max_non_split_rounding_mb:1024,graph_capture_record_stream_reuse:True,pinned_use_background_threads:True,pinned_use_cuda_host_register:True'
+  VLLM_ALLOW_LONG_MAX_MODEL_LEN: "1"
+  VLLM_SPARSE_INDEXER_MAX_LOGITS_MB: "256"
+  VLLM_MARLIN_USE_ATOMIC_ADD: "1"
+  DG_JIT_USE_NVRTC: "1"
+  TILELANG_CLEANUP_TEMP_FILES: "1"
+  VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS: "1"
+  VLLM_MEMORY_PROFILE_INCLUDE_ATTN: "1"
+  VLLM_SKIP_INIT_MEMORY_CHECK: "1"
+  VLLM_USE_FASTOKENS: "1"
+  VLLM_FLASHINFER_DECODE_USE_TENSOR_CORES: "1"
+  VLLM_USE_FLASHINFER_SAMPLER: "1"
+  VLLM_USE_V2_MODEL_RUNNER: '1'
+  VLLM_USE_AOT_COMPILE: '1'
+  TORCH_CUDA_ARCH_LIST: '12.1a'
+  FLASHINFER_CUDA_ARCH_LIST: '12.1a'
+  VLLM_STRICT_MEMORY_CHECK: '0'
+
+executor_config:
+  ulimit:
+    - memlock=-1:-1
+    - nofile=262144:262144
+
+mods:
+  - fastokens
+  - vllm-skip-memory-check
+
+description: Ornith-1.0-397B
+model: ornith-ai/Ornith-1.5-397B-FP8
+recipe_version: '2'
