@@ -1,15 +1,16 @@
-name: Ornith-1.0-35B
+name: Ornith-1.5-35B
 solo_only: false
 cluster_only: false
 command: |
   vllm serve {model} \
-    --served-model-name deepreinforce-ai/Ornith-1.0-35B \
+    --served-model-name '{served_model_name}' \
     --tensor-parallel-size {tensor_parallel} \
     --host {host} --port {port} \
     --max-model-len {max_model_len} \
     --gpu-memory-utilization {gpu_memory_utilization} \
     --max-num-seqs {max_num_seqs} \
     --max-num-batched-tokens {max_num_batched_tokens} \
+    --block-size {block_size} \
     --enable-prefix-caching \
     --enable-auto-tool-choice --tool-call-parser qwen3_xml \
     --reasoning-parser qwen3 \
@@ -19,28 +20,50 @@ command: |
     --enable-chunked-prefill \
     --enable-flashinfer-autotune \
     --kv-cache-dtype {kv_cache_dtype} \
-    -ep
+    --moe-backend {moe_backend} \
+    --linear-backend {linear_backend} \
+    --speculative-config '{speculative_config}' \
+    --compilation-config '{compilation_config}'
 defaults:
+  served_model_name: 'deepreinforce-ai/Ornith-1.0-35B'
   kv_cache_dtype: auto
-  attn_backend: FLASH_ATTN
+  attn_backend: B12X_MLA_SPARSE
   load_format: instanttensor
   tensor_parallel: 1
   max_model_len: 262144
   max_num_seqs: 10
   port: 8000
   max_num_batched_tokens: 32768
+  block_size: 256
   host: 0.0.0.0
-  gpu_memory_utilization: 0.85
+  gpu_memory_utilization: 0.9
+  speculative_config: '{"method": "mtp", "num_speculative_tokens": 3}'
+  compilation_config: '{"cudagraph_mode":"FULL_AND_PIECEWISE","custom_ops":["all"]}'
+  moe_backend: b12x
+  linear_backend: b12x
 env:
   INSTANTTENSOR_CHUNK_SIZE: "16777216"
   INSTANTTENSOR_IO_DEPTH: 5
   PYTORCH_CUDA_ALLOC_CONF: 'expandable_segments:True,max_non_split_rounding_mb:2048,graph_capture_record_stream_reuse:True,pinned_use_background_threads:True,pinned_use_cuda_host_register:True'
   VLLM_MARLIN_USE_ATOMIC_ADD: "1"
   VLLM_USE_FASTOKENS: "1"
+  VLLM_USE_V2_MODEL_RUNNER: "1"
+  VLLM_MEMORY_PROFILE_INCLUDE_ATTN: "1"
+  VLLM_USE_B12X_WO_PROJECTION: "1"
+  VLLM_USE_B12X_MHC: "1"
+  VLLM_USE_B12X_FP8_GEMM: "1"
+  VLLM_USE_B12X_MOE: "1"
+  VLLM_USE_B12X_SPARSE_INDEXER: "1"
+  B12X_MLA_SM120_UNIFIED: "1"
+  B12X_MOE_FORCE_A8: "1"
+executor_config:
+  ulimit:
+    - memlock=-1:-1
+    - nofile=262144:262144
 mods:
   - fastokens
 description: Ornith-1.0-35B
-container: vllm-node-tf5
-model: deepreinforce-ai/Ornith-1.0-35B
+container: ghcr.io/spark-arena/dgx-vllm-eugr-nightly-b12x:20260822
+model: shisa-ai/Ornith-1.5-35B-A3B-MTP
 recipe_version: '2'
 builder: eugr
