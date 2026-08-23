@@ -1,6 +1,6 @@
 metadata:
   description: Gemma4-26B-A4B-it (DSpark speculative decoding)
-model: orcarouter/Gemma-4-26B-A4B-it-Uncensored-FP8
+model: unsloth/gemma-4-26B-A4B-it
 command: |
   vllm serve {model} \
     --served-model-name "google/gemma-4-26B-A4B-it" \
@@ -65,3 +65,4 @@ env:
   
 mods:
   - fastokens
+  - gemma4-jinja
