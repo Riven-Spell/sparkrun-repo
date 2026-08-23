@@ -66,7 +66,7 @@ executor_config:
 mods:
   - fastokens
 description: Ornith-1.0-35B
-container: ghcr.io/spark-arena/dgx-vllm-eugr-nightly-b12x:20260822
+container: ghcr.io/spark-arena/dgx-vllm-eugr-nightly-b12x:20260818
 model: shisa-ai/Ornith-1.5-35B-A3B-MTP
 recipe_version: '2'
 builder: eugr
