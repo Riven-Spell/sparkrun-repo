@@ -27,7 +27,7 @@ command: |
 defaults:
   served_model_name: 'deepreinforce-ai/Ornith-1.0-35B'
   kv_cache_dtype: auto
-  attn_backend: B12X_MLA_SPARSE
+  attn_backend: FLASHINFER
   load_format: instanttensor
   tensor_parallel: 1
   max_model_len: 262144
@@ -39,8 +39,8 @@ defaults:
   gpu_memory_utilization: 0.9
   speculative_config: '{"method": "mtp", "num_speculative_tokens": 3}'
   compilation_config: '{"cudagraph_mode":"FULL_AND_PIECEWISE","custom_ops":["all"]}'
-  moe_backend: b12x
-  linear_backend: b12x
+  moe_backend: auto
+  linear_backend: auto
 env:
   INSTANTTENSOR_CHUNK_SIZE: "16777216"
   INSTANTTENSOR_IO_DEPTH: 5
@@ -56,6 +56,9 @@ env:
   VLLM_USE_B12X_SPARSE_INDEXER: "1"
   B12X_MLA_SM120_UNIFIED: "1"
   B12X_MOE_FORCE_A8: "1"
+  TORCH_CUDA_ARCH_LIST: '12.1a'
+  FLASHINFER_CUDA_ARCH_LIST: '12.1a'
+  VLLM_FLASHINFER_DECODE_USE_TENSOR_CORES: "1"
 executor_config:
   ulimit:
     - memlock=-1:-1
