@@ -39,8 +39,8 @@ defaults:
   gpu_memory_utilization: 0.9
   speculative_config: '{"method": "dflash", "model": "z-lab/Qwen3.5-35B-A3B-DFlash", "num_speculative_tokens": 3}'
   compilation_config: '{"cudagraph_mode":"FULL_AND_PIECEWISE","custom_ops":["all"]}'
-  moe_backend: auto
-  linear_backend: auto
+  moe_backend: b12x
+  linear_backend: b12x
 env:
   INSTANTTENSOR_CHUNK_SIZE: "16777216"
   INSTANTTENSOR_IO_DEPTH: 5
