@@ -1,13 +1,5 @@
 metadata:
-  num_layers: 30
-  quantization: modelopt
   description: Gemma4-31B-it
-  model_dtype: nvfp4
-  quant_bits: 4
-  kv_dtype: fp8
-  num_kv_heads: 8
-  head_dim: 256
-  model_params: '34372770104'
 model: kakrotto/gemma-4-31B-it-uncensored-heretic-FP8
 command: |
   vllm serve {model} \
@@ -56,7 +48,7 @@ defaults:
   max_num_seqs: 10
   attn_backend: TRITON_ATTN
   chat_template_args: '{"enable_thinking": true}'
-  speculative_config: '{"method": "dspark", "model":"RedHatAI/gemma-4-31B-it-speculator.dspark", "num_speculative_tokens": 3}'
+  speculative_config: '{"method":"mtp","model":"google/gemma-4-31B-it-assistant","num_speculative_tokens":3}'
   compilation_config: '{"cudagraph_mode":"FULL_AND_PIECEWISE","custom_ops":["all"]}'
 env:
   VLLM_MARLIN_USE_ATOMIC_ADD: '1'
