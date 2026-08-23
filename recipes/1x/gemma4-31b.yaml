@@ -48,7 +48,7 @@ defaults:
   max_num_seqs: 10
   attn_backend: TRITON_ATTN
   chat_template_args: '{"enable_thinking": true}'
-  speculative_config: '{"method":"mtp","model":"google/gemma-4-31B-it-assistant","num_speculative_tokens":3}'
+  speculative_config: '{"method": "dspark", "model": "olka-amd/dspark-gemma-4-31b-it", "num_speculative_tokens": 7}'
   compilation_config: '{"cudagraph_mode":"FULL_AND_PIECEWISE","custom_ops":["all"]}'
 env:
   VLLM_MARLIN_USE_ATOMIC_ADD: '1'
