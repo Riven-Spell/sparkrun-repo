@@ -1,6 +1,6 @@
 metadata:
   description: Gemma4-31B-it
-model: kakrotto/gemma-4-31B-it-uncensored-heretic-FP8
+model: necroyancer/gemma-4-31B-it-NVFP4-turbo-vision
 command: |
   vllm serve {model} \
     --served-model-name "google/gemma-4-31B" \
