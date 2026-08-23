@@ -54,7 +54,7 @@ defaults:
   max_num_batched_tokens: 32768
   max_model_len: 262144
   max_num_seqs: 10
-  attn_backend: FLASHINFER
+  attn_backend: TRITON_ATTN
   chat_template_args: '{"enable_thinking": true}'
   speculative_config: '{"method": "dspark", "model":"RedHatAI/gemma-4-31B-it-speculator.dspark", "num_speculative_tokens": 3}'
   compilation_config: '{"cudagraph_mode":"FULL_AND_PIECEWISE","custom_ops":["all"]}'

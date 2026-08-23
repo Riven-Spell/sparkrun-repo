@@ -1,13 +1,5 @@
 metadata:
-  num_layers: 30
-  quantization: modelopt
   description: Gemma4-26B-A4B-it (DSpark speculative decoding)
-  model_dtype: nvfp4
-  quant_bits: 4
-  kv_dtype: auto
-  num_kv_heads: 8
-  head_dim: 256
-  model_params: '34372770104'
 model: orcarouter/Gemma-4-26B-A4B-it-Uncensored-FP8
 command: |
   vllm serve {model} \
@@ -50,37 +42,26 @@ defaults:
   load_format: instanttensor
   reasoning_parser: gemma4
   kv_cache_dtype: auto
-  gpu_memory_utilization: 0.8
+  gpu_memory_utilization: 0.9
   tensor_parallel: 1
   max_num_batched_tokens: 32768
   max_model_len: 262144
   max_num_seqs: 10
   max_cudagraph_capture_size: 8
   block_size: 256
-  attn_backend: FLASHINFER
+  attn_backend: TRITON_ATTN
   chat_template_args: '{"enable_thinking": true}'
-  speculative_config: '{"method": "dspark", "num_speculative_tokens": 6, "model": "makora-ai/gemma4-26b-a4b-dspark"}'
+  speculative_config: '{"method": "dspark", "num_speculative_tokens": 3, "model": "makora-ai/gemma4-26b-a4b-dspark"}'
   compilation_config: '{"cudagraph_mode":"FULL_AND_PIECEWISE","custom_ops":["all"]}'
 env:
   PYTORCH_CUDA_ALLOC_CONF: 'expandable_segments:True'
-  VLLM_SKIP_INIT_MEMORY_CHECK: "1"
-  VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS: "0"
+  VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS: '1'
   VLLM_MARLIN_USE_ATOMIC_ADD: '1'
   VLLM_USE_FASTOKENS: '1'
   VLLM_FLASHINFER_DECODE_USE_TENSOR_CORES: '1'
   VLLM_USE_V2_MODEL_RUNNER: '1'
-  VLLM_USE_FLASHINFER_SAMPLER: '0'
-  VLLM_DSPARK_CONFIDENCE_THRESHOLD: "0.0"
-  VLLM_DSPARK_CONFIDENCE_SCHEDULER: "off"
-  VLLM_DSPARK_LOCAL_ARGMAX: "1"
-  VLLM_DSPARK_REPLICATE_MARKOV_W1: "1"
-  VLLM_DSPARK_FUSED_MARKOV_ARGMAX: "0"
-  VLLM_DSPARK_GPU_REJECTED_CONTEXT_MASK: "1"
-  VLLM_DSPARK_REFERENCE_KV_QUANT_DEQUANT: "0"
-  VLLM_DSPARK_HARDWARE_SCHEDULER_EARLY_STOP: "1"
   TILELANG_CLEANUP_TEMP_FILES: "1"
   TORCH_CUDA_ARCH_LIST: '12.1a'
-  FLASHINFER_CUDA_ARCH_LIST: '12.1a'
+  
 mods:
-  - mods/gemma4-jinja
   - fastokens
