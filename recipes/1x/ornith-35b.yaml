@@ -37,7 +37,7 @@ defaults:
   block_size: 256
   host: 0.0.0.0
   gpu_memory_utilization: 0.9
-  speculative_config: '{"method": "mtp", "num_speculative_tokens": 3}'
+  speculative_config: '{"method": "dflash", "model": "z-lab/Qwen3.5-35B-A3B-DFlash", "num_speculative_tokens": 3}'
   compilation_config: '{"cudagraph_mode":"FULL_AND_PIECEWISE","custom_ops":["all"]}'
   moe_backend: auto
   linear_backend: auto
@@ -67,6 +67,6 @@ mods:
   - fastokens
 description: Ornith-1.0-35B
 container: ghcr.io/spark-arena/dgx-vllm-eugr-nightly-b12x:20260818
-model: shisa-ai/Ornith-1.5-35B-A3B-MTP
+model: ornith-ai/Ornith-1.5-35B-A3B
 recipe_version: '2'
 builder: eugr
