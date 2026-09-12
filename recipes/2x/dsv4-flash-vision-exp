@@ -1,0 +1,99 @@
+# Heavily influenced by https://huggingface.co/drowzeys/DeepSeek-V4-Flash-DSpark-NVFP4-KV-1.5M-CTX-2xDGX-Spark
+# Achieves ~40-50 tps; ~[30, 65] tps bounds
+
+model: orcarouter/DeepSeek-V4-Flash-Vision-Uncensored
+container: vllm-runtime-v0260:dspark-nvfp4-b12x
+defaults:
+  port: 8000
+  host: 0.0.0.0
+  tensor_parallel: 2
+  gpu_memory_utilization: 0.89
+  max_model_len: 250000
+  max_num_batched_tokens: 8192
+  max_num_seqs: 8
+  block_size: 256
+  tool_call_parser: deepseek_v4
+  pipeline_parallel: 1
+  data_parallel: 1
+  max_cudagraph_capture_size: 72
+  load_format: instanttensor
+  kv_cache_dtype: fp8
+  reasoning_parser: deepseek_v4
+  tokenizer_mode: deepseek_v4
+  speculative_config: '{"method": "dspark", "num_speculative_tokens": 5, "draft_sample_method": "probabilistic", "enable_adaptive_verification": true, "attention_backend": "B12X_MLA_SPARSE"}'
+  compilation_config: '{"cudagraph_mode":"FULL_AND_PIECEWISE","custom_ops":["all"]}'
+  default_chat_template_kwargs: '{"enable_thinking": true, "preserve_thinking": true}'
+  moe_backend: b12x
+  linear_backend: b12x
+  attention_backend: B12X_MLA_SPARSE
+  served_model_name: 'deepseek-ai/DeepSeek-V4-Flash'
+command: |
+  vllm serve {model} \
+    --served-model-name '{served_model_name}' \
+    --host {host} \
+    --port {port} \
+    --max-model-len {max_model_len} \
+    --max-num-seqs {max_num_seqs} \
+    --max-num-batched-tokens {max_num_batched_tokens} \
+    --trust-remote-code \
+    --gpu-memory-utilization {gpu_memory_utilization} \
+    --enable-auto-tool-choice \
+    --tool-call-parser {tool_call_parser} \
+    --tokenizer-mode {tokenizer_mode} \
+    --reasoning-parser {reasoning_parser} \
+    --kv-cache-dtype {kv_cache_dtype} \
+    --load-format {load_format} \
+    --speculative-config '{speculative_config}' \
+    --compilation-config '{compilation_config}' \
+    --enable-prefix-caching \
+    --max-cudagraph-capture-size {max_cudagraph_capture_size} \
+    -tp {tensor_parallel} \
+    -pp {pipeline_parallel} \
+    --default-chat-template-kwargs '{default_chat_template_kwargs}' \
+    --block-size {block_size} \
+    --generation-config vllm \
+    --moe-backend {moe_backend} \
+    --linear-backend {linear_backend} \
+    --attention-backend {attention_backend}
+env:
+  PYTORCH_CUDA_ALLOC_CONF: 'expandable_segments:True,max_non_split_rounding_mb:2048,graph_capture_record_stream_reuse:True,pinned_use_background_threads:True,pinned_use_cuda_host_register:True'
+  VLLM_MARLIN_USE_ATOMIC_ADD: "1"
+  VLLM_ALLOW_LONG_MAX_MODEL_LEN: "1"
+  VLLM_FLASHINFER_DECODE_USE_TENSOR_CORES: "1"
+  VLLM_SPARSE_INDEXER_MAX_LOGITS_MB: "256"
+  VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS: "0"
+  DG_JIT_USE_NVRTC: "0"
+  TILELANG_CLEANUP_TEMP_FILES: "1"
+  TORCH_CUDA_ARCH_LIST: '12.1a'
+  FLASHINFER_CUDA_ARCH_LIST: '12.1a'
+  VLLM_USE_V2_MODEL_RUNNER: '1'
+  VLLM_USE_AOT_COMPILE: '1'
+  VLLM_USE_FASTOKENS: "1"
+  VLLM_USE_V2_MODEL_RUNNER: "1"
+  VLLM_MEMORY_PROFILE_INCLUDE_ATTN: "1"
+  VLLM_USE_FLASHINFER_SAMPLER: "1"
+  VLLM_USE_B12X_WO_PROJECTION: "1"
+  VLLM_USE_B12X_MHC: "1"
+  VLLM_USE_B12X_FP8_GEMM: "1"
+  VLLM_USE_B12X_MOE: "1"
+  VLLM_USE_B12X_SPARSE_INDEXER: "1"
+  B12X_MLA_SM120_UNIFIED: "1"
+  B12X_MOE_FORCE_A8: "1"
+  VLLM_STRICT_MEMORY_CHECK: "0"
+runtime: vllm
+# dsv4-nvfp4-kv-cache must come after vllm-pr-41834-dsv4-flash. It is dormant
+# unless kv_cache_dtype is set to nvfp4 (or nvfp4_ds_mla).
+mods: ['mods/vllm-pr-41834-dsv4-flash', 'fastokens', 'vllm-skip-memory-check']
+builder: eugr
+runtime_config:
+  build_args: [ '--vllm-ref', 'v0.26.0', '--apply-flashinfer-pr', '3989', '--exp-b12x' ]
+executor_config:
+  ulimit:
+    - memlock=-1:-1
+    - nofile=262144:262144
+ssh:
+  user: clusteruser
+min_nodes: 2
+metadata:
+  description: DeepSeek-V4-Flash
+recipe_version: '2'
