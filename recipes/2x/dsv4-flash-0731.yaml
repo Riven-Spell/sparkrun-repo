@@ -2,7 +2,7 @@
 # Achieves ~40-50 tps; ~[30, 65] tps bounds
 
 model: lovesenko/DeepSeek-V4-Flash-0731-Abliterated
-container: vllm-runtime-v0260:dspark-nvfp4-b12x
+container: vllm-runtime-v0290:dspark-nvfp4-b12x
 defaults:
   port: 8000
   host: 0.0.0.0
@@ -86,7 +86,7 @@ runtime: vllm
 mods: ['mods/vllm-pr-41834-dsv4-flash', 'fastokens', 'vllm-skip-memory-check']
 builder: eugr
 runtime_config:
-  build_args: [ '--vllm-ref', 'v0.26.0', '--apply-flashinfer-pr', '3989', '--exp-b12x' ]
+  build_args: [ '--vllm-ref', 'v0.29.0', '--flashinfer-ref', 'v0.6.18', '--exp-b12x' ]
 executor_config:
   ulimit:
     - memlock=-1:-1
