@@ -86,7 +86,7 @@ runtime: vllm
 mods: ['mods/vllm-pr-41834-dsv4-flash', 'fastokens', 'vllm-skip-memory-check']
 builder: eugr
 runtime_config:
-  build_args: [ '--vllm-ref', 'v0.29.0', '--flashinfer-ref', 'v0.6.18', '--exp-b12x' ]
+  build_args: [ '--vllm-ref', 'v0.29.0', '--flashinfer-ref', 'v0.6.18' ]
 executor_config:
   ulimit:
     - memlock=-1:-1
