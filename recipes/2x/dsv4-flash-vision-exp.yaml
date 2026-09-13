@@ -83,7 +83,7 @@ env:
 runtime: vllm
 # dsv4-nvfp4-kv-cache must come after vllm-pr-41834-dsv4-flash. It is dormant
 # unless kv_cache_dtype is set to nvfp4 (or nvfp4_ds_mla).
-mods: ['mods/vllm-pr-41834-dsv4-flash', 'fastokens', 'vllm-skip-memory-check']
+mods: ['mods/vllm-pr-41834-dsv4-flash', 'fastokens', 'vllm-skip-memory-check', 'sparkinfer-install']
 builder: eugr
 runtime_config:
   build_args: [ '--vllm-ref', 'v0.29.0', '--flashinfer-ref', 'v0.6.18' ]
