@@ -25,7 +25,7 @@ defaults:
   default_chat_template_kwargs: '{"enable_thinking": true, "preserve_thinking": true}'
   moe_backend: b12x
   linear_backend: b12x
-  attention_backend: B12X_MLA_SPARSE
+  attention_backend: b12x
   served_model_name: 'deepseek-ai/DeepSeek-V4-Flash'
 command: |
   vllm serve {model} \
