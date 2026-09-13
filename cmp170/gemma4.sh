@@ -1,9 +1,9 @@
-docker run -d --gpus all --restart unless-stopped --name gemma4-31B \                             [16:47:03]
+docker run -d --gpus all --restart unless-stopped --name gemma4-31B \
   --privileged --ipc=host -p 8000:8000 \
   -v ~/.cache/huggingface:/root/.cache/huggingface \
   -e CUDA_DEVICE_ORDER=PCI_BUS_ID \
   -e CUDA_VISIBLE_DEVICES=0 \
-  vllm/vllm-openai: kakrotto/gemma-4-31B-it-uncensored-heretic-FP8 \
+  vllm/vllm-openai:v0.29.0 kakrotto/gemma-4-31B-it-uncensored-heretic-FP8 \
   --served-model-name "google/gemma-4-31B-it" \
   --kv-cache-dtype bfloat16 \
   --max-num-batched-tokens 8192 \
