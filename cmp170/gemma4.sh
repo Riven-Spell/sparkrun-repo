@@ -1,0 +1,26 @@
+docker run -d --gpus all --restart unless-stopped --name gemma4-31B \                             [16:47:03]
+  --privileged --ipc=host -p 8000:8000 \
+  -v ~/.cache/huggingface:/root/.cache/huggingface \
+  -e CUDA_DEVICE_ORDER=PCI_BUS_ID \
+  -e CUDA_VISIBLE_DEVICES=0 \
+  vllm/vllm-openai: kakrotto/gemma-4-31B-it-uncensored-heretic-FP8 \
+  --served-model-name "google/gemma-4-31B-it" \
+  --kv-cache-dtype bfloat16 \
+  --max-num-batched-tokens 8192 \
+  --block-size 256 \
+  --tensor-parallel-size 1 \
+  --enable-auto-tool-choice \
+  --tool-call-parser gemma4 \
+  --chat-template examples/tool_chat_template_gemma4.jinja \
+  --reasoning-parser gemma4 \
+  --max-model-len 120000 \
+  --trust-remote-code \
+  --async-scheduling --speculative-config '{"method": "dspark", "model": "olka-amd/dspark-gemma-4-31b-it", "num_speculative_tokens": 7, "draft_sample_method": "greedy"}' \
+  --attention-backend auto \
+  --enable-flashinfer-autotune \
+  --gpu-memory-utilization 0.99 \
+  --enable-chunked-prefill \
+  --enable-prefix-caching \
+  --default-chat-template-kwargs "{\"enable_thinking\": true}" \
+  --compilation-config "{\"cudagraph_mode\":\"FULL_AND_PIECEWISE\",\"custom_ops\":[\"all\"]}" \
+  -O3
