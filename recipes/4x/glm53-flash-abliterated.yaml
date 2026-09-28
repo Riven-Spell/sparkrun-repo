@@ -32,9 +32,9 @@ defaults:
   max_model_len: 250000
   max_num_batched_tokens: 4096
   max_num_seqs: 8
-  block_size: 1024
-  speculative_config: '{"method":"dflash","model":"incoai/GLM-5.3-Flash-DFlash2","num_speculative_tokens":8,"moe_backend":"humming","kv_cache_dtype":"bfloat16","draft_sample_method": "probabilistic", "enable_adaptive_verification": "true"}'
-  compilation_config: '{"cudagraph_mode":"FULL"}'
+  block_size: 2048
+  speculative_config: '{"method":"dflash","model":"incoai/GLM-5.3-Flash-DFlash2","num_speculative_tokens":8,"moe_backend":"humming","kv_cache_dtype":"bfloat16"}'
+  compilation_config: '{"cudagraph_mode":"FULL", "custom_ops": ["all"]}'
   default_chat_template_kwargs: '{"enable_thinking": true, "preserve_thinking": true}'
 
 command: |
