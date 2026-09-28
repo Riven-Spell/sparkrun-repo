@@ -34,7 +34,7 @@ defaults:
   max_num_seqs: 8
   block_size: 1024
   speculative_config: '{"method":"dflash","model":"incoai/GLM-5.3-Flash-DFlash2","num_speculative_tokens":8,"moe_backend":"humming","kv_cache_dtype":"bfloat16","draft_sample_method": "probabilistic", "enable_adaptive_verification": "true"}'
-  compilation_config: '{"cudagraph_mode":"FULL_AND_PIECEWISE","custom_ops":["all"], "max_cudagraph_capture_size": 16}'
+  compilation_config: '{"cudagraph_mode":"FULL"}'
   default_chat_template_kwargs: '{"enable_thinking": true, "preserve_thinking": true}'
 
 command: |
@@ -86,3 +86,4 @@ env:
   VLLM_USE_B12X_SPARSE_INDEXER: "1"
   B12X_MLA_SM120_UNIFIED: "1"
   VLLM_STRICT_MEMORY_CHECK: "0"
+  VLLM_USE_BREAKABLE_CUDAGRAPH: '0'
