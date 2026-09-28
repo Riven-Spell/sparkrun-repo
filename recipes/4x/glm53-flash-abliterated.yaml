@@ -30,12 +30,12 @@ defaults:
   linear_backend: b12x
   attention_backend: B12X
   max_model_len: 250000
-  max_num_batched_tokens: 4096
-  max_num_seqs: 8
+  max_num_batched_tokens: 16384
+  max_num_seqs: 10
   block_size: 2048
-  speculative_config: '{"method":"dflash","model":"incoai/GLM-5.3-Flash-DFlash2","num_speculative_tokens":8,"moe_backend":"humming","kv_cache_dtype":"bfloat16"}'
-  compilation_config: '{"cudagraph_mode":"FULL", "custom_ops": ["all"]}'
-  default_chat_template_kwargs: '{"enable_thinking": true, "preserve_thinking": true}'
+  speculative_config: '{"method":"dflash","model":"incoai/GLM-5.3-Flash-DFlash2","num_speculative_tokens":3,"moe_backend":"deep_gemm","kv_cache_dtype":"bfloat16"}'
+  compilation_config: '{"cudagraph_mode":"FULL_AND_PIECEWISE", "custom_ops": ["all"]}'
+  default_chat_template_kwargs: '{"reasoning_effort": "high"}'
 
 command: |
   vllm serve {model} \
@@ -62,7 +62,9 @@ command: |
     --enable-prefix-caching \
     --enable-chunked-prefill \
     --enable-flashinfer-autotune \
-    --enable-auto-tool-choice
+    --enable-prompt-tokens-details \
+    --enable-auto-tool-choice \
+    -O3
 
 env:
   PYTORCH_CUDA_ALLOC_CONF: 'expandable_segments:True,max_non_split_rounding_mb:2048,graph_capture_record_stream_reuse:True,pinned_use_background_threads:True,pinned_use_cuda_host_register:True'
