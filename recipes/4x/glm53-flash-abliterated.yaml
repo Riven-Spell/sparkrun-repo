@@ -30,11 +30,11 @@ defaults:
   linear_backend: b12x
   attention_backend: B12X
   max_model_len: 250000
-  max_num_batched_tokens: 8192
+  max_num_batched_tokens: 4096
   max_num_seqs: 8
-  block_size: 256
+  block_size: 1024
   max_cudagraph_capture_size: 8
-  speculative_config: '{"method":"mtp","num_speculative_tokens":3,"moe_backend":"humming", "draft_sample_method": "greedy"}'
+  speculative_config: '{"method":"dflash","model":"incoai/GLM-5.3-Flash-DFlash2","num_speculative_tokens":8,"moe_backend":"humming","kv_cache_dtype":"bfloat16","draft_sample_method": "probabilistic", "enable_adaptive_verification": "true"}'
   compilation_config: '{"cudagraph_mode":"FULL_AND_PIECEWISE","custom_ops":["all"]}'
   default_chat_template_kwargs: '{"enable_thinking": true, "preserve_thinking": true}'
 
@@ -82,7 +82,6 @@ env:
   VLLM_USE_V2_MODEL_RUNNER: '1'
   VLLM_USE_AOT_COMPILE: '1'
   VLLM_USE_FASTOKENS: "1"
-  VLLM_USE_V2_MODEL_RUNNER: "1"
   VLLM_MEMORY_PROFILE_INCLUDE_ATTN: "1"
   VLLM_USE_FLASHINFER_SAMPLER: "1"
   VLLM_USE_B12X_WO_PROJECTION: "1"
