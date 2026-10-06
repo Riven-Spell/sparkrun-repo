@@ -65,6 +65,7 @@ command: |
     --enable-prompt-tokens-details \
     --enable-auto-tool-choice \
     --async-scheduling \
+    --trust-remote-code \
     -O3
 
 env:
@@ -86,3 +87,4 @@ env:
   VLLM_USE_BREAKABLE_CUDAGRAPH: '0'
   VLLM_SPARSE_INDEXER_MAX_LOGITS_MB: "256"
   OMP_NUM_THREADS: "10"
+  B12X_AUTOTUNE_RANK0_ONLY: "1"
