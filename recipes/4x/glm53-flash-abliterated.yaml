@@ -65,6 +65,7 @@ command: |
     --enable-prompt-tokens-details \
     --enable-auto-tool-choice \
     --async-scheduling \
+    --trust-remote-code \
     -O3
 
 env:
