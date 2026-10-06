@@ -1,6 +1,6 @@
 name: GLM 5.3 Flash Abliterated (OrcaRouter)
 description: GLM 5.3 Flash Abliterated; needs hf auth + action on model page
-container: ghcr.io/spark-arena/dgx-vllm-eugr-nightly-b12x:2026092702
+container: ghcr.io/spark-arena/dgx-vllm-eugr-nightly-b12x:2026100502
 model: orcarouter/GLM-5.3-Flash-Uncensored-FP8
 solo_only: false
 cluster_only: true
