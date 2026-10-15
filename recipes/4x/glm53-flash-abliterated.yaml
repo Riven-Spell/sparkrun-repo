@@ -33,7 +33,7 @@ defaults:
   max_num_batched_tokens: 8192
   max_num_seqs: 8
   block_size: 2048
-  speculative_config: '{"method":"dflash","model":"incoai/GLM-5.3-Flash-DFlash2","num_speculative_tokens":7,"num_speculative_tokens_per_batch_size":[[1,3,7],[4,512,5]],"moe_backend":"deep_gemm","kv_cache_dtype":"bfloat16"}'
+  speculative_config: '{"method":"dflash","model":"incoai/GLM-5.3-Flash-DFlash2","num_speculative_tokens":4,"moe_backend":"deep_gemm","kv_cache_dtype":"nvfp4"}'
   compilation_config: '{"cudagraph_mode":"FULL_AND_PIECEWISE","custom_ops":["all"],"pass_config":{"fuse_allreduce_rms":true,"fuse_gemm_comms":true}}'
   default_chat_template_kwargs: '{"reasoning_effort": "high"}'
 
@@ -86,6 +86,7 @@ env:
   VLLM_STRICT_MEMORY_CHECK: "0"
   VLLM_USE_BREAKABLE_CUDAGRAPH: '0'
   VLLM_SPARSE_INDEXER_MAX_LOGITS_MB: "256"
+  VLLM_B12X_CUDAGRAPH_PIECEWISE_PREWARM: "1"
   OMP_NUM_THREADS: "10"
   # --- NCCL: pin the CX7 RoCE fabric (adapted from the spark-arena TP4 recipe) ---
   NCCL_NET: "IB"
